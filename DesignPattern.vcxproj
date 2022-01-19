@@ -140,6 +140,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Adaper.cpp" />
     <ClCompile Include="DesignBase.cpp" />
     <ClCompile Include="DesignMgr.cpp" />
     <ClCompile Include="main.cpp" />
@@ -147,12 +148,15 @@
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
+    <ClCompile Include="TemplateMethod.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Adaper.h" />
     <ClInclude Include="DesignBase.h" />
     <ClInclude Include="DesignMgr.h" />
     <ClInclude Include="ProTotype.h" />
     <ClInclude Include="stdafx.h" />
+    <ClInclude Include="TemplateMethod.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

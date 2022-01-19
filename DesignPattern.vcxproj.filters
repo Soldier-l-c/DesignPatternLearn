@@ -36,6 +36,12 @@
     <ClCompile Include="ProTotype.cpp">
       <Filter>Design\ProTotype</Filter>
     </ClCompile>
+    <ClCompile Include="Adaper.cpp">
+      <Filter>Design</Filter>
+    </ClCompile>
+    <ClCompile Include="TemplateMethod.cpp">
+      <Filter>Design</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -49,6 +55,12 @@
     </ClInclude>
     <ClInclude Include="ProTotype.h">
       <Filter>Design\ProTotype</Filter>
+    </ClInclude>
+    <ClInclude Include="Adaper.h">
+      <Filter>Design</Filter>
+    </ClInclude>
+    <ClInclude Include="TemplateMethod.h">
+      <Filter>Design</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
