@@ -141,13 +141,17 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="DesignBase.cpp" />
+    <ClCompile Include="DesignMgr.cpp" />
     <ClCompile Include="main.cpp" />
+    <ClCompile Include="ProTotype.cpp" />
     <ClCompile Include="stdafx.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">Create</PrecompiledHeader>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="DesignBase.h" />
+    <ClInclude Include="DesignMgr.h" />
+    <ClInclude Include="ProTotype.h" />
     <ClInclude Include="stdafx.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

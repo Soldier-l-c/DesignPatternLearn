@@ -4,5 +4,6 @@
 #include <iostream>
 #include <vector>
 #include < algorithm >
-
+#define LOG std::cout
+#define END std::endl
 #endif // !STDAFX_H
