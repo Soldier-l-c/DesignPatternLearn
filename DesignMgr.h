@@ -3,7 +3,7 @@
 class CDesignMgr
 {
 public:
-	using DesiginList = std::vector<DesignPtr>;
+	using DesiginList = std::vector<IDesignPtr>;
 
 	void Init();
 	void Test();

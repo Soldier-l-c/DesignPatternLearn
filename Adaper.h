@@ -1,7 +1,6 @@
 ﻿#pragma once
 #include "DesignBase.h"
 
-
 class CAdaper :public CDesignBase
 {
 public:

@@ -21,5 +21,5 @@ void CDesignMgr::Init()
 
 void CDesignMgr::Test()
 {
-	std::for_each(m_desList.begin(), m_desList.end(), [](DesignPtr& ptr) {if (ptr)ptr->StartTest(); });
+	std::for_each(m_desList.begin(), m_desList.end(), [](IDesignPtr& ptr) {if (ptr)ptr->StartTest(); });
 }

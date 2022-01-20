@@ -3,8 +3,8 @@ class CDesignBase
 {
 public:
 	virtual void Init() {};
-	virtual void StartTest() {};
+	virtual void StartTest() = 0;
 
 	virtual ~CDesignBase() {};
 };
-using DesignPtr = std::shared_ptr<CDesignBase>;
+using IDesignPtr = std::shared_ptr<CDesignBase>;
