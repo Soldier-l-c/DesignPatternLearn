@@ -32,6 +32,9 @@ class DoWork : public DoWorkBase
 public:
 	virtual void AddObserver(const IObserverPtr& ptr) override
 	{
+		const auto iter = std::find_if(m_observerList.begin(), m_observerList.end(), [ptr](const IObserverPtr& p) {return ptr == p; });
+		if (iter != m_observerList.end())return;
+
 		m_observerList.emplace_back(ptr);
 	};
 
@@ -55,7 +58,9 @@ public:
 protected:
 	virtual void NotifyObservers()override
 	{
-		std::for_each(m_observerList.begin(), m_observerList.end(), [](const IObserverPtr& p) {if (p)p->OnNotify(); });
+		std::thread([this] {
+			std::for_each(m_observerList.begin(), m_observerList.end(), [](const IObserverPtr& p) {if (p)p->OnNotify(); });
+			}).detach();
 	};
 
 protected:
@@ -75,10 +80,14 @@ public:
 
 	void DoSomething()
 	{
-		IDoWorkPtr ptr = std::make_shared<DoWork>();
-		ptr->AddObserver(shared_from_this());
-		ptr->StartDoWork();
+		//保存一下，防止被提前析构
+		m_pwork = std::make_shared<DoWork>();
+		m_pwork->AddObserver(shared_from_this());
+		m_pwork->StartDoWork();
 	};
+
+private:
+	IDoWorkPtr m_pwork{ nullptr };
 };
 
 void CObserver::StartTest()
@@ -86,4 +95,6 @@ void CObserver::StartTest()
 	LOG << "StartTest CObserver！" << END;
 	auto ptr = std::make_shared<CObserverNotify>();
 	ptr->DoSomething();
+
+	std::this_thread::sleep_for(MILL_SECOND(100));
 }
