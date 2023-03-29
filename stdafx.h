@@ -5,6 +5,9 @@
 #include <vector>
 #include < algorithm >
 #include <string>
+#include <thread>
+#include <chrono>
+
 #include <sstream>
 
 class Logger 
@@ -25,5 +28,6 @@ public:
 };
 
 #define LOG Logger()
+#define MILL_SECOND(n) std::chrono::milliseconds(n)
 
 #endif // !STDAFX_H
