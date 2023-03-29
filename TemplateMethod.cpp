@@ -34,7 +34,7 @@ protected:
 
 void CTemplateMethod::StartTest()
 {
-	LOG << "Run CTemplateMethod test!" << END;
+	LOG << "Run CTemplateMethod test!";
 	auto ptr = std::make_shared<CTUse>();
 	ptr->Run();
 }

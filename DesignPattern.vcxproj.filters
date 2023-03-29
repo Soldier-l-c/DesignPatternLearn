@@ -19,6 +19,9 @@
     <Filter Include="Design\ProTotype">
       <UniqueIdentifier>{5ee63381-3590-414d-b174-94cb848e8f3d}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Test">
+      <UniqueIdentifier>{bef1a2f3-4187-4ea2-b73d-c766d2f47eb1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -45,6 +48,9 @@
     <ClCompile Include="Observer.cpp">
       <Filter>Design</Filter>
     </ClCompile>
+    <ClCompile Include="Test.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -67,6 +73,9 @@
     </ClInclude>
     <ClInclude Include="Observer.h">
       <Filter>Design</Filter>
+    </ClInclude>
+    <ClInclude Include="Test.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
