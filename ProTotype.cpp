@@ -8,5 +8,5 @@ void CProtoType::Init()
 
 void CProtoType::StartTest()
 {
-	LOG << "StartTest CProtoType.";
+	LOG(INFO) << "StartTest CProtoType.";
 }

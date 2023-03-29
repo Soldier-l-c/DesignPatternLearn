@@ -143,6 +143,7 @@
     <ClCompile Include="Adaper.cpp" />
     <ClCompile Include="DesignBase.cpp" />
     <ClCompile Include="DesignMgr.cpp" />
+    <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="Observer.cpp" />
     <ClCompile Include="ProTotype.cpp" />
@@ -156,6 +157,7 @@
     <ClInclude Include="Adaper.h" />
     <ClInclude Include="DesignBase.h" />
     <ClInclude Include="DesignMgr.h" />
+    <ClInclude Include="Logger.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="ProTotype.h" />
     <ClInclude Include="stdafx.h" />

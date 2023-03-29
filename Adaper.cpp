@@ -7,7 +7,7 @@ class Target
 public:
 	virtual void Run(const int& n) const
 	{
-		LOG << "RunStr int:[" << n << "]";
+		LOG(INFO) << "RunStr int:[" << n << "]";
 	};
 };
 
@@ -18,7 +18,7 @@ public:
 	//适配器模式通过封装对象将复杂的转换过程隐藏于幕后。 被封装的对象甚至察觉不到适配器的存在。 
 	void RunStr(const std::string& str) const
 	{
-		LOG << "RunStr str:[" << str << "]";
+		LOG(INFO) << "RunStr str:[" << str << "]";
 	}
 };
 
@@ -53,7 +53,7 @@ void AdapterTest()
 
 void CAdaper::StartTest()
 {
-	LOG << "Run CAdaper test!";
+	LOG(INFO) << "Run CAdaper test!";
 
 	AdapterTest();
 }

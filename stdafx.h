@@ -7,27 +7,23 @@
 #include <string>
 #include <thread>
 #include <chrono>
-
 #include <sstream>
 
-class Logger 
-{
-public:
-	Logger() = default;
-	~Logger()
-	{
-		std::cout << std::endl;
-	}
+#include "Logger.h"
 
-	template <class T>
-	Logger& operator<<(const T& t)
-	{
-		std::cout << t;
-		return *this;
-	}
-};
+#ifndef INFO
+#define INFO 30
+#endif // !INFO
 
-#define LOG Logger()
+#ifndef ERROR
+#define ERROR 25
+#endif // !ERROR
+
+#ifndef DEBUG
+#define DEBUG 20
+#endif // !DEBUG
+
+#define LOG(level) Logger(level)
 #define MILL_SECOND(n) std::chrono::milliseconds(n)
 
 #endif // !STDAFX_H

@@ -74,7 +74,7 @@ public:
 
 	virtual void OnNotify() override
 	{
-		LOG << "OnNotify has been triggered!";
+		LOG(INFO) << "OnNotify has been triggered!";
 		//do
 	};
 
@@ -92,7 +92,7 @@ private:
 
 void CObserver::StartTest()
 {
-	LOG << "StartTest CObserver！";
+	LOG(INFO) << "StartTest CObserver！";
 	auto ptr = std::make_shared<CObserverNotify>();
 	ptr->DoSomething();
 

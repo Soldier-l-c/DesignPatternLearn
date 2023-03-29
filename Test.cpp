@@ -15,12 +15,12 @@ void CTest::TestSizeOf()
 	class A
 	{
 	public:
-		virtual void fun() { LOG << "AI"; };
+		virtual void fun() { LOG(INFO) << "AI"; };
 	};
 	class C
 	{
 	public:
-		virtual void fun() { LOG << "CI"; };
+		virtual void fun() { LOG(INFO) << "CI"; };
 	};
 	class B : public A, public C
 	{
@@ -28,7 +28,7 @@ void CTest::TestSizeOf()
 	};
 
 	//B中会有两个虚表指针，一个是从A继承的，一个是从B继承的。
-	LOG << "TestSizeOf,sizeof(A):[" << sizeof(A) << "] sizeof(B):[" << sizeof(B) << "] ";
+	LOG(INFO) << "TestSizeOf,sizeof(A):[" << sizeof(A) << "] sizeof(B):[" << sizeof(B) << "] ";
 
 	C* a = new B();
 
