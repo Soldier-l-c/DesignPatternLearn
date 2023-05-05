@@ -8,8 +8,10 @@
 #include <thread>
 #include <chrono>
 #include <sstream>
+#include <map>
 
 #include "Logger.h"
+#include "DesignBase.h"
 
 #ifndef INFO
 #define INFO 30

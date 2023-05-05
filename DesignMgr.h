@@ -1,5 +1,4 @@
 ﻿#pragma once
-#include "DesignBase.h"
 class CDesignMgr
 {
 public:

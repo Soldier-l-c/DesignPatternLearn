@@ -25,6 +25,9 @@
     <Filter Include="Logger">
       <UniqueIdentifier>{fbdd913b-dbfc-4d65-9b8a-36c57733fa74}</UniqueIdentifier>
     </Filter>
+    <Filter Include="LeetcodeTest">
+      <UniqueIdentifier>{62ae529d-eea3-4f34-8e23-4afeb7224435}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -57,6 +60,9 @@
     <ClCompile Include="Logger.cpp">
       <Filter>Logger</Filter>
     </ClCompile>
+    <ClCompile Include="LeetCodeTest.cpp">
+      <Filter>LeetcodeTest</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -85,6 +91,9 @@
     </ClInclude>
     <ClInclude Include="Logger.h">
       <Filter>Logger</Filter>
+    </ClInclude>
+    <ClInclude Include="LeetCodeTest.h">
+      <Filter>LeetcodeTest</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

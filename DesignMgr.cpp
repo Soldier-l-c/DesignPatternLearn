@@ -6,6 +6,7 @@
 #include "TemplateMethod.h"
 #include "Observer.h"
 #include "Test.h"
+#include "LeetCodeTest.h"
 
 #define MAKE_PTR(_class)std::make_shared<_class>()
 
@@ -17,7 +18,8 @@ void CDesignMgr::Init()
 		MAKE_PTR(CAdaper),
 		MAKE_PTR(CTemplateMethod),
 		MAKE_PTR(CObserver),
-		MAKE_PTR(CTest)
+		MAKE_PTR(CTest),
+		MAKE_PTR(LeetCodeTest)
 	};
 }
 

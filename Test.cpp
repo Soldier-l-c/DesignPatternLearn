@@ -16,6 +16,8 @@ void CTest::TestSizeOf()
 	{
 	public:
 		virtual void fun() { LOG(INFO) << "AI"; };
+	private:
+		std::string name_;
 	};
 	class C
 	{
@@ -24,7 +26,6 @@ void CTest::TestSizeOf()
 	};
 	class B : public A, public C
 	{
-
 	};
 
 	//B中会有两个虚表指针，一个是从A继承的，一个是从B继承的。
