@@ -32,5 +32,5 @@ public:
 
 private:
     std::allocator<ValueType> allocator_;
-    std::map<ValueType*, size_t> alloca_list_;
+    std::unordered_map<ValueType*, size_t> alloca_list_;
 };
