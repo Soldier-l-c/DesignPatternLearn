@@ -12,6 +12,11 @@
 
 #include "Logger.h"
 #include "DesignBase.h"
+#include "noncopyable.h"
+
+#ifdef _WIN32
+#include <Windows.h>
+#endif // WIN32_
 
 #ifndef INFO
 #define INFO 30
