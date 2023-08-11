@@ -34,20 +34,25 @@ public:
 		while (parent && parent->col == Tree::RBTree::NodeColor::Red)
 		{
 			auto pp_node = parent->parent;
+			auto parent_child_type = parent == pp_node->left ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
 
-			if (parent == pp_node->left)
+			//第一种情况，叔父节点为红色，直接把父节点以及叔父节点置为黑色，祖父节点置为红色
+			//node 赋值为祖父节点，parent赋为祖父节点的父节点，继续执行平衡
+			//此操作可能会将root节点修改为红色
+			NodePtr sib_node = parent_child_type == Tree::TreeChildNode::Left ? pp_node->right : pp_node->left;
+			if (sib_node && Tree::RBTree::NodeColor::Red == sib_node->col)
 			{
-				auto sib_node = pp_node->right;
-				if (sib_node && Tree::RBTree::NodeColor::Red == sib_node->col)
-				{
-					sib_node->col = Tree::RBTree::NodeColor::Black;
-					parent->col = Tree::RBTree::NodeColor::Black;
-					pp_node->col = Tree::RBTree::NodeColor::Red;
-					node = pp_node;
-					parent = pp_node->parent;
-					continue;
-				}
+				sib_node->col = Tree::RBTree::NodeColor::Black;
+				parent->col = Tree::RBTree::NodeColor::Black;
+				pp_node->col = Tree::RBTree::NodeColor::Red;
+				node = pp_node;
+				parent = pp_node->parent;
+				continue;
+			}
 
+			//第二种情况，叔父节点不存在或者存在并且为黑色
+			if (parent_child_type == Tree::TreeChildNode::Left)
+			{
 				if (Tree::TreeChildNode::Right == insert_location.child_pos)
 				{
 					RotateL(parent);
@@ -62,17 +67,6 @@ public:
 			}
 			else
 			{
-				auto sib_node = pp_node->left;
-				if (sib_node && Tree::RBTree::NodeColor::Red == sib_node->col)
-				{
-					sib_node->col = Tree::RBTree::NodeColor::Black;
-					parent->col = Tree::RBTree::NodeColor::Black;
-					pp_node->col = Tree::RBTree::NodeColor::Red;
-					node = pp_node;
-					parent = pp_node->parent;
-					continue;
-				}
-
 				if (Tree::TreeChildNode::Left == insert_location.child_pos)
 				{
 					RotateR(parent);
@@ -86,6 +80,7 @@ public:
 				RotateL(pp_node);
 			}
 
+			//关键一步，避免执行平衡过程中将根节点修改为红色
 			root_->col = Tree::RBTree::NodeColor::Black;
 		}
 	}
