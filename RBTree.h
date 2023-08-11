@@ -10,7 +10,7 @@ class RBTree
 	};
 
 public:
-	void Insert(const NodePtr& node)
+	void Insert(NodePtr node)
 	{
 		if (root_ == nullptr)
 		{
@@ -43,13 +43,17 @@ public:
 					sib_node->col = Tree::RBTree::NodeColor::Black;
 					parent->col = Tree::RBTree::NodeColor::Black;
 					pp_node->col = Tree::RBTree::NodeColor::Red;
-					parent = pp_node;
+					node = pp_node;
+					parent = pp_node->parent;
 					continue;
 				}
 
 				if (Tree::TreeChildNode::Right == insert_location.child_pos)
 				{
 					RotateL(parent);
+
+					//左旋之后，node是parent的parent，之后右旋的时候修改颜色需要修改node的颜色
+					parent = node;
 				}
 
 				pp_node->col = Tree::RBTree::NodeColor::Red;
@@ -64,13 +68,17 @@ public:
 					sib_node->col = Tree::RBTree::NodeColor::Black;
 					parent->col = Tree::RBTree::NodeColor::Black;
 					pp_node->col = Tree::RBTree::NodeColor::Red;
-					parent = pp_node;
+					node = pp_node;
+					parent = pp_node->parent;
 					continue;
 				}
 
 				if (Tree::TreeChildNode::Left == insert_location.child_pos)
 				{
 					RotateR(parent);
+
+					//右旋之后，node是其之前parent的parent，之后左旋的时候修改颜色需要修改node的颜色
+					parent = node;
 				}
 
 				pp_node->col = Tree::RBTree::NodeColor::Red;
