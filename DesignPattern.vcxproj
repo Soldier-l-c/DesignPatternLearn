@@ -154,6 +154,7 @@
     </ClCompile>
     <ClCompile Include="TemplateMethod.cpp" />
     <ClCompile Include="Test.cpp" />
+    <ClCompile Include="TreeTest.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Adaper.h" />
@@ -164,10 +165,13 @@
     <ClInclude Include="noncopyable.h" />
     <ClInclude Include="Observer.h" />
     <ClInclude Include="ProTotype.h" />
+    <ClInclude Include="RBTree.h" />
     <ClInclude Include="SmartAllocator.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="TemplateMethod.h" />
     <ClInclude Include="Test.h" />
+    <ClInclude Include="TreeNode.h" />
+    <ClInclude Include="TreeTest.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

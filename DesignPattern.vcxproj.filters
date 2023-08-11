@@ -28,6 +28,12 @@
     <Filter Include="LeetcodeTest">
       <UniqueIdentifier>{62ae529d-eea3-4f34-8e23-4afeb7224435}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Tree">
+      <UniqueIdentifier>{21a47567-bfe9-4780-910c-14761217fc2b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Tree\RBTree">
+      <UniqueIdentifier>{b90d92cb-50f4-4698-9e8a-21bdba99ce1d}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.cpp">
@@ -66,6 +72,9 @@
     <ClCompile Include="SmartAllocator.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="TreeTest.cpp">
+      <Filter>Tree</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -103,6 +112,15 @@
     </ClInclude>
     <ClInclude Include="noncopyable.h">
       <Filter>头文件</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeNode.h">
+      <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="RBTree.h">
+      <Filter>Tree\RBTree</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeTest.h">
+      <Filter>Tree</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
