@@ -6,7 +6,7 @@ class RBTree
 	struct InserLocation
 	{
 		NodePtr parent;
-		Tree::TreeChildNode child_pos;
+		Tree::TreeChildNode child_pos{ Tree::TreeChildNode::Left };
 	};
 
 public:
@@ -29,12 +29,15 @@ public:
 		{
 			insert_location.parent->right = node;
 		}
+		node->parent = insert_location.parent;
+
+		LOG(INFO) << "node->parent value:[" << node->parent->value << "]";
 
 		auto parent = insert_location.parent;
-		while (parent && parent->col == Tree::RBTree::NodeColor::Red)
+		while (nullptr != parent && parent->col == Tree::RBTree::NodeColor::Red)
 		{
 			auto pp_node = parent->parent;
-			auto parent_child_type = parent == pp_node->left ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
+			auto parent_child_type = (pp_node->left && parent == pp_node->left) ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
 
 			//第一种情况，叔父节点为红色，直接把父节点以及叔父节点置为黑色，祖父节点置为红色
 			//node 赋值为祖父节点，parent赋为祖父节点的父节点，继续执行平衡
@@ -79,10 +82,10 @@ public:
 				parent->col = Tree::RBTree::NodeColor::Black;
 				RotateL(pp_node);
 			}
-
-			//关键一步，避免执行平衡过程中将根节点修改为红色
-			root_->col = Tree::RBTree::NodeColor::Black;
 		}
+
+		//关键一步，避免执行平衡过程中将根节点修改为红色
+		root_->col = Tree::RBTree::NodeColor::Black;
 	}
 	
 	void Erease(const NodePtr& node)
@@ -153,5 +156,5 @@ private:
 	}
 
 private:
-	NodePtr root_;
+	NodePtr root_{ nullptr };
 };
