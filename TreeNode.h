@@ -35,12 +35,12 @@ namespace Tree
 		struct RBKeyTreeNode
 		{
 			using RBKeyTreeNodePtr = std::shared_ptr<RBKeyTreeNode<Key, Value>>;
-			RBKeyTreeNodePtr left;
-			RBKeyTreeNodePtr right;
-			RBKeyTreeNodePtr parent;
+			RBKeyTreeNodePtr left{ nullptr };
+			RBKeyTreeNodePtr right{ nullptr };
+			RBKeyTreeNodePtr parent{ nullptr };
 			Value value;
 			Key key;
-			NodeColor col;
+			NodeColor col{ NodeColor::Red };
 		};
 
 		template <class Key, class Value>
@@ -101,11 +101,11 @@ namespace Tree
 		struct RBTreeNode
 		{
 			using RBTreeNodePtr = std::shared_ptr<RBTreeNode<Value>>;
-			RBTreeNodePtr left;
-			RBTreeNodePtr right;
-			RBTreeNodePtr parent;
+			RBTreeNodePtr left{ nullptr };
+			RBTreeNodePtr right{ nullptr };
+			RBTreeNodePtr parent{ nullptr };
 			Value value;
-			NodeColor col;
+			NodeColor col{ NodeColor::Red };
 		};
 
 		template <class Value>
@@ -129,7 +129,7 @@ namespace Tree
 		template <class Value>
 		bool operator < (const std::shared_ptr<RBTreeNode<Value>>& left, const std::shared_ptr<RBTreeNode<Value>>& right)
 		{
-			return left.value < right.value;
+			return left->value < right->value;
 		}
 
 		template <class Value>
@@ -141,25 +141,25 @@ namespace Tree
 		template <class Value>
 		bool operator == (const std::shared_ptr<RBTreeNode<Value>>& left, const std::shared_ptr<RBTreeNode<Value>>& right)
 		{
-			return left.value == right.value;
+			return left->value == right->value;
 		}
 
 		template <class Value>
 		bool operator < (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
 		{
-			return left.value < right;
+			return left->value < right;
 		}
 
 		template <class Value>
 		bool operator > (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
 		{
-			return  left.value > right;
+			return  left->value > right;
 		}
 
 		template <class Value>
 		bool operator == (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
 		{
-			return left.value == right;
+			return left->value == right;
 		}
 
 	}
