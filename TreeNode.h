@@ -50,81 +50,11 @@ namespace Tree
 			Value value;
 			Key key;
 			NodeColor col{ NodeColor::Red };
-			InsLocaType GetInsertLocation(const RBKeyTreeNodePtr& root)
+			int32_t Compare(const RBKeyTreeNodePtr& node)
 			{
-				RBKeyTreeNode<Key, Value>::InsLocaType res;
-				auto cur_node = root;
-				while (nullptr != cur_node)
-				{
-					res.parent = cur_node;
-					if (cur_node->key > key)
-					{
-						cur_node = cur_node->left;
-						res.child_pos = Tree::TreeChildNode::Left;
-					}
-					else
-					{
-						cur_node = cur_node->right;
-						res.child_pos = Tree::TreeChildNode::Right;
-					}
-				}
-				return res;
+				return key > node->key ? 1 : (key == node->key ? 0 : -1);
 			}
 		};
-
-		template <class Key, class Value>
-		bool operator < (const RBKeyTreeNode<Key, Value>& left, const RBKeyTreeNode<Key, Value>& right)
-		{
-			return left.key < right.key;
-		}
-
-		template <class Key, class Value>
-		bool operator > (const RBKeyTreeNode<Key, Value>& left, const RBKeyTreeNode<Key, Value>& right)
-		{
-			return right < left;
-		}
-
-		template <class Key, class Value>
-		bool operator == (const RBKeyTreeNode<Key, Value>& left, const RBKeyTreeNode<Key, Value>& right)
-		{
-			return left.key == right.key;
-		}
-
-		template <class Key, class Value>
-		bool operator < (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const std::shared_ptr<RBKeyTreeNode<Key, Value>>& right)
-		{
-			return left->key < right->key;
-		}
-
-		template <class Key, class Value>
-		bool operator > (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const std::shared_ptr<RBKeyTreeNode<Key, Value>>& right)
-		{
-			return right < left;
-		}
-
-		template <class Key, class Value>
-		bool operator == (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const std::shared_ptr<RBKeyTreeNode<Key, Value>>& right)
-		{
-			return left->key == right->key;
-		}
-
-		template <class Key, class Value>
-		bool operator < (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const Key& right)
-		{
-			return left->key < right;
-		}
-
-		template <class Key, class Value>
-		bool operator > (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const Key& right)
-		{
-			return left->key > right;
-		}
-
-		template <class Key, class Value>
-		bool operator == (const std::shared_ptr<RBKeyTreeNode<Key, Value>>& left, const Key& right)
-		{
-			return left->key == right;
-		}
 
 		template <class Value>
 		struct RBTreeNode
@@ -138,81 +68,11 @@ namespace Tree
 			Value value;
 			NodeColor col{ NodeColor::Red };
 
-			InsLocaType GetInsertLocation(const RBTreeNodePtr& root)
+			int32_t Compare(const RBTreeNodePtr& node)
 			{
-				InsLocaType res;
-				auto cur_node = root;
-				while (nullptr != cur_node)
-				{
-					res.parent = cur_node;
-					if (cur_node->value > value)
-					{
-						cur_node = cur_node->left;
-						res.child_pos = Tree::TreeChildNode::Left;
-					}
-					else
-					{
-						cur_node = cur_node->right;
-						res.child_pos = Tree::TreeChildNode::Right;
-					}
-				}
-				return res;
+				return value > node->value ? 1 : (value == node->value ? 0 : -1);
 			}
 		};
-
-		template <class Value>
-		bool operator < (const RBTreeNode<Value>& left, const RBTreeNode<Value>& right)
-		{
-			return left.value < right.value;
-		}
-
-		template <class Value>
-		bool operator > (const RBTreeNode<Value>& left, const RBTreeNode<Value>& right)
-		{
-			return right < left;
-		}
-
-		template <class Value>
-		bool operator == (const RBTreeNode<Value>& left, const RBTreeNode<Value>& right)
-		{
-			return left.value == right.value;
-		}
-		
-		template <class Value>
-		bool operator < (const std::shared_ptr<RBTreeNode<Value>>& left, const std::shared_ptr<RBTreeNode<Value>>& right)
-		{
-			return left->value < right->value;
-		}
-
-		template <class Value>
-		bool operator > (const std::shared_ptr<RBTreeNode<Value>>& left, const std::shared_ptr<RBTreeNode<Value>>& right)
-		{
-			return right < left;
-		}
-
-		template <class Value>
-		bool operator == (const std::shared_ptr<RBTreeNode<Value>>& left, const std::shared_ptr<RBTreeNode<Value>>& right)
-		{
-			return left->value == right->value;
-		}
-
-		template <class Value>
-		bool operator < (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
-		{
-			return left->value < right;
-		}
-
-		template <class Value>
-		bool operator > (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
-		{
-			return  left->value > right;
-		}
-
-		template <class Value>
-		bool operator == (const std::shared_ptr<RBTreeNode<Value>>& left, const Value& right)
-		{
-			return left->value == right;
-		}
 	}
 
 }

@@ -76,7 +76,7 @@ private:
 			root_ = p_node;
 		}
 		//node节点是其原父节点的左子节点，将p_node 的父节点的左子节点赋值为p_node
-		else if(p_node->parent->left && p_node->parent->left == node)
+		else if(p_node->parent->left == node)
 		{
 			p_node->parent->left = p_node;
 		}
@@ -116,7 +116,7 @@ private:
 			root_ = p_node;
 		}
 		//node节点是其原父节点的左子节点
-		else if (p_node->parent->left && p_node->parent->left == node)
+		else if (p_node->parent->left == node)
 		{
 			p_node->parent->left = p_node;
 		}
@@ -131,7 +131,7 @@ private:
 		while (nullptr != parent && parent->col == Tree::RBTree::NodeColor::Red)
 		{
 			auto pp_node = parent->parent;
-			auto parent_child_type = (pp_node->left && parent == pp_node->left) ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
+			auto parent_child_type = (parent == pp_node->left) ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
 
 			//第一种情况，叔父节点为红色，直接把父节点以及叔父节点置为黑色，祖父节点置为红色
 			//node 赋值为祖父节点，parent赋为祖父节点的父节点，继续执行平衡
@@ -180,7 +180,23 @@ private:
 
 	InserLocation GetInsertLocation(const NodePtr& node)
 	{
-		return node->GetInsertLocation(root_);
+		InserLocation res;
+		auto cur_node = root_;
+		while (nullptr != cur_node)
+		{
+			res.parent = cur_node;
+			if (cur_node->Compare(node) > 0)
+			{
+				cur_node = cur_node->left;
+				res.child_pos = Tree::TreeChildNode::Left;
+			}
+			else
+			{
+				cur_node = cur_node->right;
+				res.child_pos = Tree::TreeChildNode::Right;
+			}
+		}
+		return res;
 	}
 
 private:
