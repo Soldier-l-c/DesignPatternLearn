@@ -3,6 +3,11 @@
 #include "RBTree.h"
 #include "TreeTest.h"
 
+using IntIntKeyNode = Tree::RBTree::RBKeyTreeNode<int32_t, int32_t>;
+using IntNode = Tree::RBTree::RBTreeNode<int32_t>;
+using IntIntKeyNodePtr = IntIntKeyNode::RBKeyTreeNodePtr;
+using IntNodePtr = IntNode::RBTreeNodePtr;
+
 template <class TreeNodePtr>
 void MidDfsPrintTree(const TreeNodePtr& root)
 {
@@ -16,10 +21,10 @@ void MidDfsPrintTree(const TreeNodePtr& root)
 void TestRBTreeNode()
 {
 	LOG(INFO) << "TestRBTreeNode begin ....";
-	RBTree<std::shared_ptr<Tree::RBTree::RBTreeNode<int32_t>>> rb_tree;
+	RBTree<IntNodePtr> rb_tree;
 	for (int i = 0; i < 100; ++i)
 	{
-		auto node = std::make_shared<Tree::RBTree::RBTreeNode<int32_t>>();
+		auto node = std::make_shared<IntNode>();
 		node->value = i;
 		rb_tree.Insert(node);
 	}
@@ -30,10 +35,10 @@ void TestRBTreeNode()
 void TestRBKeyTreeNode()
 {
 	LOG(INFO) << "TestRBKeyTreeNode begin ....";
-	RBTree<std::shared_ptr<Tree::RBTree::RBKeyTreeNode<int32_t, int32_t>>> rb_tree;
+	RBTree<IntIntKeyNodePtr> rb_tree;
 	for (int i = 0; i < 100; ++i)
 	{
-		auto node = std::make_shared<Tree::RBTree::RBKeyTreeNode<int32_t, int32_t>>();
+		auto node = std::make_shared<IntIntKeyNode>();
 		node->value = i;
 		node->key = i;
 		rb_tree.Insert(node);
