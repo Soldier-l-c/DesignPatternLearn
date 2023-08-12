@@ -1,18 +1,16 @@
 #pragma once
 
-template <class NodePtr>
+template <class Node>
 class RBTree
 {
-	struct InserLocation
-	{
-		NodePtr parent{ nullptr };
-		Tree::TreeChildNode child_pos{ Tree::TreeChildNode::Left };
-	};
+	using NodePtr = std::shared_ptr<Node>;
+	using InserLocation = typename Node::InsLocaType;
 
 public:
 	void Insert(NodePtr node)
 	{
-		if (root_ == nullptr)
+		auto insert_location = GetInsertLocation(node);
+		if(nullptr == insert_location.parent)
 		{
 			root_ = node;
 			root_->col = Tree::RBTree::NodeColor::Black;
@@ -20,7 +18,6 @@ public:
 		}
 
 		node->col = Tree::RBTree::NodeColor::Red;
-		auto insert_location = GetInsertLocation(node);
 		if (Tree::TreeChildNode::Left == insert_location.child_pos)
 		{
 			insert_location.parent->left = node;
@@ -31,55 +28,8 @@ public:
 		}
 		node->parent = insert_location.parent;
 
-		auto parent = insert_location.parent;
-		while (nullptr != parent && parent->col == Tree::RBTree::NodeColor::Red)
-		{
-			auto pp_node = parent->parent;
-			auto parent_child_type = (pp_node->left && parent == pp_node->left) ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
-
-			//第一种情况，叔父节点为红色，直接把父节点以及叔父节点置为黑色，祖父节点置为红色
-			//node 赋值为祖父节点，parent赋为祖父节点的父节点，继续执行平衡
-			NodePtr sib_node = parent_child_type == Tree::TreeChildNode::Left ? pp_node->right : pp_node->left;
-			if (sib_node && Tree::RBTree::NodeColor::Red == sib_node->col)
-			{
-				sib_node->col = Tree::RBTree::NodeColor::Black;
-				parent->col = Tree::RBTree::NodeColor::Black;
-				pp_node->col = Tree::RBTree::NodeColor::Red;
-				node = pp_node;
-				parent = pp_node->parent;
-				continue;
-			}
-
-			//第二种情况，叔父节点不存在或者存在并且为黑色
-			if (parent_child_type == Tree::TreeChildNode::Left)
-			{
-				if (Tree::TreeChildNode::Right == insert_location.child_pos)
-				{
-					RotateL(parent);
-
-					//左旋之后，node是parent的parent，之后右旋的时候修改颜色需要修改node的颜色
-					parent = node;
-				}
-
-				pp_node->col = Tree::RBTree::NodeColor::Red;
-				parent->col = Tree::RBTree::NodeColor::Black;
-				RotateR(pp_node);
-			}
-			else
-			{
-				if (Tree::TreeChildNode::Left == insert_location.child_pos)
-				{
-					RotateR(parent);
-
-					//右旋之后，node是其之前parent的parent，之后左旋的时候修改颜色需要修改node的颜色
-					parent = node;
-				}
-
-				pp_node->col = Tree::RBTree::NodeColor::Red;
-				parent->col = Tree::RBTree::NodeColor::Black;
-				RotateL(pp_node);
-			}
-		}
+		//插入节点后重新平衡红黑树
+		MakeInsertBalance(insert_location.parent, node, insert_location);
 
 		//关键一步，避免执行平衡过程中可能会将根节点修改为红色节点，重新设置为黑色
 		root_->col = Tree::RBTree::NodeColor::Black;
@@ -176,27 +126,61 @@ private:
 		}
 	}
 
-	InserLocation GetInsertLocation(const NodePtr& node)
+	void MakeInsertBalance(NodePtr parent, NodePtr node, const InserLocation& insert_location)
 	{
-		InserLocation res;
-		NodePtr cur_node = root_;
-		while (nullptr != cur_node)
+		while (nullptr != parent && parent->col == Tree::RBTree::NodeColor::Red)
 		{
-			res.parent = cur_node;
-			//这里要求NodePtr对>进行了重载，不然就成了单纯指针的比较了
-			if (cur_node > node)
+			auto pp_node = parent->parent;
+			auto parent_child_type = (pp_node->left && parent == pp_node->left) ? Tree::TreeChildNode::Left : Tree::TreeChildNode::Right;
+
+			//第一种情况，叔父节点为红色，直接把父节点以及叔父节点置为黑色，祖父节点置为红色
+			//node 赋值为祖父节点，parent赋为祖父节点的父节点，继续执行平衡
+			NodePtr sib_node = parent_child_type == Tree::TreeChildNode::Left ? pp_node->right : pp_node->left;
+			if (sib_node && Tree::RBTree::NodeColor::Red == sib_node->col)
 			{
-				cur_node = cur_node->left;
-				res.child_pos = Tree::TreeChildNode::Left;
+				sib_node->col = Tree::RBTree::NodeColor::Black;
+				parent->col = Tree::RBTree::NodeColor::Black;
+				pp_node->col = Tree::RBTree::NodeColor::Red;
+				node = pp_node;
+				parent = pp_node->parent;
+				continue;
+			}
+
+			//第二种情况，叔父节点不存在或者存在并且为黑色
+			if (parent_child_type == Tree::TreeChildNode::Left)
+			{
+				if (Tree::TreeChildNode::Right == insert_location.child_pos)
+				{
+					RotateL(parent);
+
+					//左旋之后，node是parent的parent，之后右旋的时候修改颜色需要修改node的颜色
+					parent = node;
+				}
+
+				pp_node->col = Tree::RBTree::NodeColor::Red;
+				parent->col = Tree::RBTree::NodeColor::Black;
+				RotateR(pp_node);
 			}
 			else
 			{
-				cur_node = cur_node->right;
-				res.child_pos = Tree::TreeChildNode::Right;
+				if (Tree::TreeChildNode::Left == insert_location.child_pos)
+				{
+					RotateR(parent);
+
+					//右旋之后，node是其之前parent的parent，之后左旋的时候修改颜色需要修改node的颜色
+					parent = node;
+				}
+
+				pp_node->col = Tree::RBTree::NodeColor::Red;
+				parent->col = Tree::RBTree::NodeColor::Black;
+				RotateL(pp_node);
 			}
 		}
+	}
 
-		return res;
+	InserLocation GetInsertLocation(const NodePtr& node)
+	{
+		return node->GetInsertLocation(root_);
 	}
 
 private:
