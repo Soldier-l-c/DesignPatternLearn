@@ -53,6 +53,13 @@ void TestRBTreeNode()
 	}
 	MidDfsPrintTree(srb_tree.GetRoot());
 
+	auto find_node = srb_tree.Find(decltype(StringNode::value)("1"));
+	if (find_node)
+	{
+		LOG(INFO) << "Find node:[" << find_node->value << "]";
+	}
+
+
 	LOG(INFO) << "TestRBTreeNode end ....";
 }
 
@@ -79,6 +86,13 @@ void TestRBKeyTreeNode()
 	}
 
 	MidDfsPrintTree(srb_tree.GetRoot());
+
+	auto find_node = srb_tree.Find(decltype(StringIntKeyNode::key)("1"));
+	if (find_node)
+	{
+		LOG(INFO) << "Find node:[" << find_node->value << "]";
+	}
+
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }
 

@@ -7,4 +7,5 @@ int main()
 	desmgr->Init();
 	desmgr->Test();
 	system("pause");
+	std::map<int, int>().lower_bound(1);
 }

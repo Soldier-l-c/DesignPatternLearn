@@ -4,12 +4,30 @@ template <class Node>
 class RBTree
 {
 	using NodePtr = std::shared_ptr<Node>;
-	using InserLocation = typename Node::InsLocaType;
+
+	struct InserLocation
+	{
+		NodePtr parent{ nullptr };
+		Tree::TreeChildNode child_pos{ Tree::TreeChildNode::Right };
+	};
+
+	struct FindResult
+	{
+		NodePtr bound{ nullptr };
+		InserLocation insert_location;
+	};
 
 public:
 	void Insert(NodePtr node)
 	{
-		auto insert_location = GetInsertLocation(node);
+		auto insert_location_dup = GetInsertLocation(node);
+		if (!insert_location_dup.second)
+		{
+			return;
+		}
+
+		auto insert_location = insert_location_dup.first;
+
 		if(nullptr == insert_location.parent)
 		{
 			root_ = node;
@@ -43,6 +61,19 @@ public:
 	NodePtr GetRoot()
 	{
 		return root_;
+	}
+
+	template <class KeyOrValue>
+	NodePtr Find(const KeyOrValue& key_value)
+	{
+		auto lowwer_bound = FindLowerBound(key_value);
+
+		if (LowerBoundDuplicate(lowwer_bound.bound, key_value))
+		{
+			return lowwer_bound.bound;
+		}
+
+		return NodePtr();
 	}
 
 private:
@@ -178,25 +209,72 @@ private:
 		}
 	}
 
-	InserLocation GetInsertLocation(const NodePtr& node)
+	template <class KeyOrValue>
+	FindResult FindLowerBound(const KeyOrValue& key_value)
 	{
-		InserLocation res;
-		auto cur_node = root_;
-		while (nullptr != cur_node)
+		FindResult res;
+		auto p_node = root_;
+		while (p_node)
 		{
-			res.parent = cur_node;
-			if (cur_node->Compare(node) > 0)
+			res.insert_location.parent = p_node;
+			//p_node的value或key小于key_value，说明key_value在p_node的右子树中或者应该插入到p_node的右子树中
+			if (p_node->Compare(key_value) < 0)
 			{
-				cur_node = cur_node->left;
-				res.child_pos = Tree::TreeChildNode::Left;
+				p_node = p_node->right;
+				res.insert_location.child_pos = Tree::TreeChildNode::Right;//插入位置
 			}
+			//p_node的value或key大于等于key_value，说明key_value在p_node以及p_node的左子树中或者应该插入到p_node的左子树中
 			else
 			{
-				cur_node = cur_node->right;
-				res.child_pos = Tree::TreeChildNode::Right;
+				res.bound = p_node;
+				res.insert_location.child_pos = Tree::TreeChildNode::Left;
+				p_node = p_node->left;
 			}
 		}
 		return res;
+	}
+
+	template <class KeyOrValue>
+	FindResult FindUpperBound(const KeyOrValue& key_value)
+	{
+		FindResult res;
+		auto p_node = root_;
+		while (p_node)
+		{
+			res.insert_location.parent = p_node;
+			//p_node的value或key小于key_value，说明key_value在p_node的右子树中或者应该插入到p_node的右子树中
+			if (p_node->Compare(key_value) <= 0)
+			{
+				p_node = p_node->right;
+				res.insert_location.child_pos = Tree::TreeChildNode::Right;//插入位置
+			}
+			//p_node的value或key大于等于key_value，说明key_value在p_node以及p_node的左子树中或者应该插入到p_node的左子树中
+			else
+			{
+				res.bound = p_node;
+				res.insert_location.child_pos = Tree::TreeChildNode::Left;
+				p_node = p_node->left;
+			}
+		}
+		return res;
+	}
+
+	template <class KeyOrValue>
+	bool LowerBoundDuplicate(const NodePtr& bound, const KeyOrValue& key_value)
+	{
+		//当查找到的lowwerbound 的值等于 key_value时，其实就已经出现重复了。（小于的情况其实不会出现）
+		return bound && !(bound->Compare(key_value) > 0);
+	}
+
+	std::pair<InserLocation, bool> GetInsertLocation(const NodePtr& node)
+	{
+		auto lowwer_bound = FindLowerBound(node);
+		if (lowwer_bound.bound && LowerBoundDuplicate(lowwer_bound.bound, node))
+		{
+			return { lowwer_bound.insert_location, false };
+		}
+
+		return { lowwer_bound.insert_location , true };
 	}
 
 private:
