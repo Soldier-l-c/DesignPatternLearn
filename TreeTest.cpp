@@ -116,7 +116,7 @@ void TestRBTreeNode()
 	MidDfsPrintTree(srb_tree.GetRoot());
 
 	auto find_node = srb_tree.Find(decltype(StringNode::value)("1"));
-	if (find_node)
+	if (find_node!= srb_tree.End())
 	{
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
@@ -143,19 +143,24 @@ void TestRBKeyTreeNode()
 	{
 		auto node = std::make_shared<StringIntKeyNode>();
 		node->value = i;
-		node->key = std::to_string(100-i);
+		node->key = std::to_string(100 -i);
 		srb_tree.Insert(node);
 	}
 
 	MidDfsPrintTree(srb_tree.GetRoot());
 
 	auto find_node = srb_tree.Find(decltype(StringIntKeyNode::key)("1"));
-	if (find_node)
+	if (find_node != srb_tree.End())
 	{
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
 
 	srb_tree.EraseEx<std::string>(decltype(StringIntKeyNode::key)("1"));
+
+	for (auto iter = srb_tree.Begin(); iter != srb_tree.End(); ++iter)
+	{
+		PrintNode(*iter);
+	}
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }

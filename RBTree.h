@@ -1,9 +1,125 @@
 #pragma once
 
+namespace NRBTree
+{
+	template <class Node>
+	struct IteratorBase
+	{
+		using NodePtr = std::shared_ptr<std::decay_t<Node>>;
+
+		IteratorBase(const NodePtr& node) :node_(node) {};
+		IteratorBase() = default;
+
+		static NodePtr Min(NodePtr node)
+		{
+			while (node && node->left)node = node->left;
+			return node;
+		}
+
+		static NodePtr Max(NodePtr node)
+		{
+			while (node && node->tight)node = node->tight;
+			return node;
+		}
+
+		IteratorBase operator++(int)
+		{
+			auto temp = *this;
+			++*this;
+			return temp;
+		}
+
+		IteratorBase& operator++()
+		{
+			if (!node_)return *this;
+			
+			if (nullptr == node_->right)
+			{
+				NodePtr pnode = node_->parent;
+				while (pnode && pnode->right == node_)
+				{
+					node_ = pnode;
+					pnode = pnode->parent;
+				}
+				node_ = pnode;
+			}
+			else
+			{
+				node_ = Min(node_->right);
+			}
+
+			return *this;
+		}
+
+		const NodePtr& operator->()
+		{
+			return node_;
+		}
+
+		bool operator==(const IteratorBase& right)
+		{
+			return this->node_ == right->node_;
+		}
+
+		bool operator!=(const IteratorBase& right)
+		{
+			return !(*this == right);
+		}
+
+		NodePtr node_{ nullptr };
+	};
+
+	template <class Node>
+	struct Iterator : public IteratorBase<Node>
+	{
+		using NodePtr = std::shared_ptr<std::decay_t<Node>>;
+
+		using MyBase = IteratorBase<std::decay_t<Node>>;
+
+		Iterator(const NodePtr& node) :IteratorBase<Node>(node) {};
+		Iterator() = default;
+
+		Iterator operator++(int)
+		{
+			auto temp_node = *this;
+			MyBase::operator++();
+			return temp_node;
+		};
+
+		Iterator& operator++() 
+		{
+			(*this)++;
+			return *this;
+		};
+
+		const NodePtr& operator->()
+		{
+			return MyBase::operator->();
+		}
+
+		bool operator==(const Iterator& right)
+		{
+			return this->node_ == right.node_;
+		}
+
+		bool operator!=(const Iterator& right)
+		{
+			return !(*this == right);
+		}
+
+		NodePtr operator*()
+		{
+			return this->node_;
+		}
+
+	};
+}
+
 template <class Node>
 class RBTree
 {
-	using NodePtr = std::shared_ptr<Node>;
+	using NodePtr = std::shared_ptr<std::decay_t<Node>>;
+	using iterator = NRBTree::Iterator<std::decay_t<Node>>;
 
 	struct InserLocation
 	{
@@ -18,56 +134,83 @@ class RBTree
 	};
 
 public:
-	void Insert(NodePtr node)
+
+	std::pair<iterator, bool> Insert(NodePtr node)
 	{
 		auto insert_location_dup = GetInsertLocation(node);
 		//已经存在了，不再插入
 		if (!insert_location_dup.second)
 		{
-			return;
+			return { iterator(insert_location_dup.first.bound), false };
 		}
 
-		InternalInsert(insert_location_dup.first, node);
-	}
-
-	template <class KeyOrValueOrNodePtr>
-	void EraseEx(const KeyOrValueOrNodePtr& node)
-	{
-		using EreaseNode = KeyOrValueOrNodePtr;
-		NodePtr erase_node{ nullptr };
-		if constexpr (std::is_same_v<std::decay_t<KeyOrValueOrNodePtr>, NodePtr>)
-		{
-			erase_node = node;
-		}
-		else
-		{
-			erase_node = Find(node);
-		}
-		if (nullptr == erase_node)return;
-		//todo
-	}
-
-	void Erase(const NodePtr& node)
-	{
-		EraseEx<NodePtr>(node);
-	}
-
-	NodePtr GetRoot()
-	{
-		return root_;
+		return { iterator(InternalInsert(insert_location_dup.first.insert_location, node)), true };
 	}
 
 	template <class KeyOrValue>
-	NodePtr Find(const KeyOrValue& key_value)
+	void EraseEx(const KeyOrValue& node)
+	{
+		NodePtr erase_node{ nullptr };
+		erase_node = Find(node).node_;
+		
+		if (nullptr == erase_node)return;
+
+		EraseInternal(iterator(erase_node));
+	}
+
+	void Erase(iterator iter)
+	{
+		EraseInternal(iter);
+	}
+
+	template <class KeyOrValue>
+	iterator Find(const KeyOrValue& key_value)
 	{
 		auto lowwer_bound = FindLowerBound(key_value);
 
 		if (LowerBoundDuplicate(lowwer_bound.bound, key_value))
 		{
-			return lowwer_bound.bound;
+			return iterator(lowwer_bound.bound);
 		}
 
-		return NodePtr();
+		return End();
+	}
+
+	template <class KeyOrValue>
+	iterator LowerBound(const KeyOrValue& key_value)
+	{
+		auto bound = FindLowerBound(key_value);
+		if (nullptr != bound)
+		{
+			return iterator(bound);
+		}
+		return End();
+	}
+
+	template <class KeyOrValue>
+	iterator UpperBound(const KeyOrValue& key_value)
+	{
+		auto bound = FindUpperBound(key_value);
+		if (nullptr != bound)
+		{
+			return iterator(bound);
+		}
+		return End();
+	}
+
+	iterator Begin()
+	{
+		return iterator(Min(root_));
+	}
+
+	iterator End()
+	{
+		return iterator(nullptr);
+	}
+
+	NodePtr GetRoot()
+	{
+		return root_;
 	}
 
 private:
@@ -232,6 +375,31 @@ private:
 		return node;
 	}
 
+	void EraseInternal(iterator erase_iter)
+	{
+		NodePtr erase_node = erase_iter.node_;
+		++erase_iter;
+
+		auto pnode = erase_node;
+		NodePtr fix_node{ nullptr };
+		NodePtr fix_node_parent{ nullptr };
+
+		//先将删除节点有两个子节点的的情况，转换为删除节点最多有一个子节点的情况。默认使用右子树最小节点替换
+		if (erase_node->left == nullptr)
+		{
+			fix_node = erase_node->right;
+		}
+		else if (erase_node->right == nullptr)
+		{
+			fix_node = erase_node->left;
+		}
+		else
+		{
+			pnode = erase_iter.node_;
+			fix_node = pnode->right;
+		}
+	}
+
 	template <class KeyOrValue>
 	FindResult FindLowerBound(const KeyOrValue& key_value)
 	{
@@ -289,15 +457,21 @@ private:
 		return bound && !(bound->Compare(key_value) > 0);
 	}
 
-	std::pair<InserLocation, bool> GetInsertLocation(const NodePtr& node)
+	std::pair<FindResult, bool> GetInsertLocation(const NodePtr& node)
 	{
 		auto lowwer_bound = FindLowerBound(node);
 		if (lowwer_bound.bound && LowerBoundDuplicate(lowwer_bound.bound, node))
 		{
-			return { lowwer_bound.insert_location, false };
+			return { lowwer_bound , false };
 		}
 
-		return { lowwer_bound.insert_location , true };
+		return { lowwer_bound , true };
+	}
+
+	static NodePtr Min(NodePtr node)
+	{
+		while (node && node->left)node = node->left;
+		return node;
 	}
 
 private:
