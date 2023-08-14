@@ -213,6 +213,11 @@ public:
 		return root_;
 	}
 
+	void Clear()
+	{
+		InternalClear();
+	}
+
 private:
 	void RotateL(const NodePtr& node)
 	{
@@ -466,6 +471,49 @@ private:
 		}
 
 		return { lowwer_bound , true };
+	}
+
+	void ReleaseNode(NodePtr& node)
+	{
+		if (nullptr == node)return;
+
+		//避免循环引用导致析构不掉
+		if (node->parent && node == node->parent->left)
+		{
+			node->parent->left.reset();
+		}
+		else if (node->parent)
+		{
+			node->parent->right.reset();
+		}
+
+		node->left.reset();
+		node->right.reset();
+		node->parent.reset();
+
+		node = nullptr;
+	}
+
+	void InternalClear()
+	{
+		std::stack<NodePtr>nodes;
+		auto pnode = root_;
+		while (nullptr != pnode || nodes.size() > 0)
+		{
+			while (nullptr != pnode)
+			{
+				nodes.push(pnode);
+				pnode = pnode->left;
+			}
+			auto temp_node = nodes.top();
+			nodes.pop();
+			pnode = temp_node->right;
+
+			ReleaseNode(temp_node);
+		}
+
+		//root_需要单独再析构一次
+		ReleaseNode(root_);
 	}
 
 private:
