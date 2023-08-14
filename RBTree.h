@@ -200,7 +200,7 @@ public:
 
 	iterator Begin()
 	{
-		return iterator(Min(root_));
+		return iterator(iterator::Min(root_));
 	}
 
 	iterator End()
@@ -466,12 +466,6 @@ private:
 		}
 
 		return { lowwer_bound , true };
-	}
-
-	static NodePtr Min(NodePtr node)
-	{
-		while (node && node->left)node = node->left;
-		return node;
 	}
 
 private:

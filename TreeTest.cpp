@@ -157,10 +157,7 @@ void TestRBKeyTreeNode()
 
 	srb_tree.EraseEx<std::string>(decltype(StringIntKeyNode::key)("1"));
 
-	for (auto iter = srb_tree.Begin(); iter != srb_tree.End(); ++iter)
-	{
-		PrintNode(*iter);
-	}
+	std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }
