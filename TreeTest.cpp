@@ -155,9 +155,15 @@ void TestRBKeyTreeNode()
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
 
-	srb_tree.EraseEx<std::string>(decltype(StringIntKeyNode::key)("1"));
+	srb_tree.Erase<std::string>(decltype(StringIntKeyNode::key)("1"));
 
 	std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
+	std::for_each(nrb_tree.Begin(), nrb_tree.End(), [](const IntIntKeyNodePtr& node) {PrintNode(node); });
+	for (auto iter = nrb_tree.RBegin(); iter != nrb_tree.End(); --iter)
+	{
+		PrintNode(*iter);
+	}
+
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }

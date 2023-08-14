@@ -18,7 +18,7 @@ namespace NRBTree
 
 		static NodePtr Max(NodePtr node)
 		{
-			while (node && node->tight)node = node->tight;
+			while (node && node->right)node = node->right;
 			return node;
 		}
 
@@ -46,6 +46,35 @@ namespace NRBTree
 			else
 			{
 				node_ = Min(node_->right);
+			}
+
+			return *this;
+		}
+
+		IteratorBase operator--(int)
+		{
+			auto temp = *this;
+			--*this;
+			return temp;
+		}
+
+		IteratorBase& operator--()
+		{
+			if (!node_)return *this;
+
+			if (nullptr == node_->left)
+			{
+				NodePtr pnode = node_->parent;
+				while (pnode && pnode->left == node_)
+				{
+					node_ = pnode;
+					pnode = pnode->parent;
+				}
+				node_ = pnode;
+			}
+			else
+			{
+				node_ = Max(node_->left);
 			}
 
 			return *this;
@@ -89,6 +118,19 @@ namespace NRBTree
 		Iterator& operator++() 
 		{
 			(*this)++;
+			return *this;
+		};
+
+		Iterator operator--(int)
+		{
+			auto temp_node = *this;
+			MyBase::operator--();
+			return temp_node;
+		};
+
+		Iterator& operator--()
+		{
+			(*this)--;
 			return *this;
 		};
 
@@ -148,7 +190,7 @@ public:
 	}
 
 	template <class KeyOrValue>
-	void EraseEx(const KeyOrValue& node)
+	void Erase(const KeyOrValue& node)
 	{
 		NodePtr erase_node{ nullptr };
 		erase_node = Find(node).node_;
@@ -204,6 +246,16 @@ public:
 	}
 
 	iterator End()
+	{
+		return iterator(nullptr);
+	}
+
+	iterator RBegin()
+	{
+		return iterator(iterator::Max(root_));
+	}
+
+	iterator REnd()
 	{
 		return iterator(nullptr);
 	}
