@@ -21,36 +21,13 @@ public:
 	void Insert(NodePtr node)
 	{
 		auto insert_location_dup = GetInsertLocation(node);
+		//已经存在了，不再插入
 		if (!insert_location_dup.second)
 		{
 			return;
 		}
 
-		auto insert_location = insert_location_dup.first;
-
-		if(nullptr == insert_location.parent)
-		{
-			root_ = node;
-			root_->col = Tree::RBTree::NodeColor::Black;
-			return;
-		}
-
-		node->col = Tree::RBTree::NodeColor::Red;
-		if (Tree::TreeChildNode::Left == insert_location.child_pos)
-		{
-			insert_location.parent->left = node;
-		}
-		else
-		{
-			insert_location.parent->right = node;
-		}
-		node->parent = insert_location.parent;
-
-		//插入节点后重新平衡红黑树
-		MakeInsertBalance(insert_location.parent, node, insert_location);
-
-		//关键一步，避免执行平衡过程中可能会将根节点修改为红色节点，重新设置为黑色
-		root_->col = Tree::RBTree::NodeColor::Black;
+		InternalInsert(insert_location_dup.first, node);
 	}
 
 	template <class KeyOrValueOrNodePtr>
@@ -67,9 +44,7 @@ public:
 			erase_node = Find(node);
 		}
 		if (nullptr == erase_node)return;
-
-
-
+		//todo
 	}
 
 	void Erase(const NodePtr& node)
@@ -226,6 +201,35 @@ private:
 				RotateL(pp_node);
 			}
 		}
+	}
+
+	NodePtr InternalInsert(const InserLocation& insert_location, NodePtr node)
+	{
+		if (nullptr == insert_location.parent)
+		{
+			root_ = node;
+			root_->col = Tree::RBTree::NodeColor::Black;
+			return node;
+		}
+
+		node->col = Tree::RBTree::NodeColor::Red;
+		if (Tree::TreeChildNode::Left == insert_location.child_pos)
+		{
+			insert_location.parent->left = node;
+		}
+		else
+		{
+			insert_location.parent->right = node;
+		}
+		node->parent = insert_location.parent;
+
+		//插入节点后重新平衡红黑树
+		MakeInsertBalance(insert_location.parent, node, insert_location);
+
+		//关键一步，避免执行平衡过程中可能会将根节点修改为红色节点，重新设置为黑色
+		root_->col = Tree::RBTree::NodeColor::Black;
+
+		return node;
 	}
 
 	template <class KeyOrValue>
