@@ -11,6 +11,8 @@
 #include <map>
 #include <unordered_map>
 
+#include <stack>
+
 #include "Logger.h"
 #include "DesignBase.h"
 #include "noncopyable.h"

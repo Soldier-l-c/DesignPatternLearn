@@ -14,23 +14,85 @@ using StringIntKeyNodePtr	= StringIntKeyNode::RBKeyTreeNodePtr;
 using StringNodePtr			= StringNode::RBTreeNodePtr;
 
 template <class TreeNodePtr>
+void PrintNode(const TreeNodePtr& root)
+{
+	if (nullptr == root)return;
+
+	if constexpr (std::is_same_v<TreeNodePtr, IntIntKeyNodePtr> || std::is_same_v<TreeNodePtr, StringIntKeyNodePtr>)
+	{
+		LOG(INFO) << "node key:[" << root->key << "] value:[" << root->value << "]";
+	}
+	else
+	{
+		LOG(INFO) << "node:[" << root->value << "]";
+	}
+}
+
+template <class TreeNodePtr>
 void MidDfsPrintTree(const TreeNodePtr& root)
 {
 	if (nullptr == root)return;
 
-	MidDfsPrintTree(root->left);
-
-	if constexpr (std::is_same_v<TreeNodePtr, IntIntKeyNodePtr> || std::is_same_v<TreeNodePtr, StringIntKeyNodePtr>)
+	std::stack<TreeNodePtr>nodes;
+	auto pnode = root;
+	while (nullptr != pnode || nodes.size() > 0)
 	{
-		LOG(INFO) << "node key:["<< root->key<<"] value:[" << root->value << "]";
-	}
-	else 
-	{
-		LOG(INFO) << "node:[" << root->value << "]";
-	}
+		while (nullptr != pnode)
+		{
+			nodes.push(pnode);
+			pnode = pnode->left;
+		}
+		auto temp_node = nodes.top();
+		nodes.pop();
+		PrintNode(temp_node);
 
-	MidDfsPrintTree(root->right);
+		pnode = temp_node->right;
+	}
 }
+
+template <class TreeNodePtr>
+void PreDfsPrintTree(const TreeNodePtr& root)
+{
+	if (nullptr == root)return;
+
+	std::stack<TreeNodePtr>nodes;
+	auto pnode = root;
+	while (nullptr != pnode || nodes.size() > 0)
+	{
+		while (nullptr != pnode)
+		{
+			PrintNode(pnode);
+			nodes.push(pnode);
+			pnode = pnode->left;
+		}
+		pnode = nodes.top()->right;
+		nodes.pop();
+	}
+}
+
+template <class TreeNodePtr>
+void SufixDfsPrintTree(const TreeNodePtr& root)
+{
+	if (nullptr == root)return;
+
+	std::stack<TreeNodePtr>nodes;
+	std::vector<TreeNodePtr>node_list;
+	auto pnode = root;
+	while (nullptr != pnode || nodes.size() > 0)
+	{
+		while (nullptr != pnode)
+		{
+			node_list.push_back(pnode);
+			nodes.push(pnode);
+			pnode = pnode->right;
+		}
+		pnode = nodes.top()->left;
+		nodes.pop();
+	}
+
+	std::for_each(node_list.rbegin(), node_list.rend(), [](const TreeNodePtr& root) {PrintNode(root); });
+}
+
 
 void TestRBTreeNode()
 {
@@ -92,6 +154,8 @@ void TestRBKeyTreeNode()
 	{
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
+
+	srb_tree.EraseEx<std::string>(decltype(StringIntKeyNode::key)("1"));
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }

@@ -52,10 +52,29 @@ public:
 		//关键一步，避免执行平衡过程中可能会将根节点修改为红色节点，重新设置为黑色
 		root_->col = Tree::RBTree::NodeColor::Black;
 	}
-	
-	void Erease(const NodePtr& node)
+
+	template <class KeyOrValueOrNodePtr>
+	void EraseEx(const KeyOrValueOrNodePtr& node)
 	{
-		//待实现
+		using EreaseNode = KeyOrValueOrNodePtr;
+		NodePtr erase_node{ nullptr };
+		if constexpr (std::is_same_v<std::decay_t<KeyOrValueOrNodePtr>, NodePtr>)
+		{
+			erase_node = node;
+		}
+		else
+		{
+			erase_node = Find(node);
+		}
+		if (nullptr == erase_node)return;
+
+
+
+	}
+
+	void Erase(const NodePtr& node)
+	{
+		EraseEx<NodePtr>(node);
 	}
 
 	NodePtr GetRoot()
