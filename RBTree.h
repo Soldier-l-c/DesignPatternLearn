@@ -163,13 +163,72 @@ namespace NRBTree
 		}
 
 	};
+
+	template <class Node>
+	struct RIterator : public IteratorBase<Node>
+	{
+		using NodePtr = std::shared_ptr<std::decay_t<Node>>;
+
+		using MyBase = IteratorBase<std::decay_t<Node>>;
+
+		RIterator(const NodePtr& node) :IteratorBase<Node>(node) {};
+		RIterator() = default;
+		RIterator operator++(int)
+		{
+			auto temp_node = *this;
+			MyBase::operator--();
+			return temp_node;
+		};
+
+		RIterator& operator++()
+		{
+			(*this)++;
+			return *this;
+		};
+
+		RIterator operator--(int)
+		{
+			auto temp_node = *this;
+			MyBase::operator++();
+			return temp_node;
+		};
+
+		RIterator& operator--()
+		{
+			(*this)++;
+			return *this;
+		};
+
+		const NodePtr& operator->()
+		{
+			return MyBase::operator->();
+		}
+
+		bool operator==(const RIterator& right)
+		{
+			return this->node_ == right.node_;
+		}
+
+		bool operator!=(const RIterator& right)
+		{
+			return !(*this == right);
+		}
+
+		NodePtr& operator*()
+		{
+			return this->node_;
+		}
+	};
+
 }
 
 template <class Node>
 class RBTree
 {
-	using NodePtr = std::shared_ptr<std::decay_t<Node>>;
-	using iterator = NRBTree::Iterator<std::decay_t<Node>>;
+	using RealNode =  std::decay_t<Node>;
+	using NodePtr = std::shared_ptr<RealNode>;
+	using iterator = NRBTree::Iterator<RealNode>;
+	using reverse_iterator = NRBTree::RIterator<RealNode>;
 
 	struct InserLocation
 	{
@@ -258,14 +317,14 @@ public:
 		return iterator(nullptr);
 	}
 
-	iterator RBegin()
+	reverse_iterator RBegin()
 	{
-		return iterator(iterator::Max(root_));
+		return reverse_iterator(reverse_iterator::Max(root_));
 	}
 
-	iterator REnd()
+	reverse_iterator REnd()
 	{
-		return iterator(nullptr);
+		return reverse_iterator(nullptr);
 	}
 
 	NodePtr GetRoot()
@@ -583,10 +642,7 @@ private:
 					{
 						if (!pnode->right || pnode->right->col == Tree::RBTree::NodeColor::Black)
 						{
-							if (pnode->left)
-							{
-								pnode->left->col = Tree::RBTree::NodeColor::Black;
-							}
+							pnode->left->col = Tree::RBTree::NodeColor::Black;
 							pnode->col = Tree::RBTree::NodeColor::Red;
 							RotateR(pnode);
 							pnode = fix_node_parent->right;
@@ -623,11 +679,7 @@ private:
 					{
 						if (!pnode->left || pnode->left->col == Tree::RBTree::NodeColor::Black)
 						{
-							if (pnode->right)
-							{
-								pnode->right->col = Tree::RBTree::NodeColor::Black;
-							}
-
+							pnode->right->col = Tree::RBTree::NodeColor::Black;
 							pnode->col = Tree::RBTree::NodeColor::Red;
 							RotateL(pnode);
 							pnode = fix_node_parent->left;

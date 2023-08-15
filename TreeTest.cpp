@@ -137,7 +137,7 @@ void TestRBKeyTreeNode()
 		nrb_tree.Insert(node);
 	}
 
-	const auto node_size = 100000;
+	const auto node_size = 100;
 	RBTree<StringIntKeyNode> srb_tree;
 	for (int i = 0; i < node_size; ++i)
 	{
@@ -153,15 +153,17 @@ void TestRBKeyTreeNode()
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
 
+	std::for_each(srb_tree.RBegin(), srb_tree.REnd(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
+
 	for (int i = 0; i < node_size; ++i)
 	{
-		auto erase_node = std::to_string(i);
-		LOG(INFO) << "erase_node:[" << erase_node << "]";
+		auto erase_node = std::to_string(node_size- i);
+		//LOG(INFO) << "erase_node:[" << erase_node << "]";
 
-		srb_tree.Erase(erase_node);
+		//srb_tree.Erase(erase_node);
 	}
 
-	std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
+	//std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }
