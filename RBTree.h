@@ -445,15 +445,15 @@ private:
 		NodePtr erase_node = erase_iter.node_;
 		++erase_iter;
 
-		//pnode 替换要删除节点的节点
+		//pnode 当erase_node有两个子节点时，替换要删除节点的节点，真正要删除的节点
 		auto pnode = erase_node;
-		//要真正删除节点的右子节点或者左子节点
+		//要真正删除节点的右子节点或者左子节点，也就是替补删除节点位置的节点
 		NodePtr fix_node{ nullptr };
 		//fix_node_parent要真正删除节点的父节点
 		NodePtr fix_node_parent{ nullptr };
 
 		//如果erase_node有一个节点，那么节点颜色一定是黑色，子节点颜色一定是红色
-		//fix_node为空或者是一个红色节点
+		//此时fix_node为空或者是一个红色节点
 		if (erase_node->left == nullptr)
 		{
 			fix_node = erase_node->right;
@@ -464,7 +464,7 @@ private:
 		}
 		else
 		{
-			//先将删除节点有两个子节点的的情况，转换为删除节点最多有一个子节点的情况。默认使用右子树最小节点替换
+			//先将删除节点有两个子节点的的情况，转换为删除节点最多有一个子节点的情况。默认使用右子树最小节点或者是其父节点的右子树的最小值替换
 			//erase_node有两个子节点，此时pnode是其右子树中最小值
 			//pnode至多有一个子节点，因为其为最小值，不可能存在左子树，只可能存在右子节点。
 			//pnode的如果存在右子节点，那么pnode一定为黑色，右子节点一定为红色。为了满足性质5
@@ -521,22 +521,132 @@ private:
 			}
 
 			//使用右子树最小节点替换被删除节点
-			if (root_ == erase_ndoe)
+			if (root_ == erase_node)
 			{
 				root_ = pnode;
 			}
 			else if (erase_node == erase_node->parent->left)
 			{
-				erase_node->parent->leff = pnode;
+				erase_node->parent->left = pnode;
 			}
 			else
 			{
 				erase_node->parent->right = pnode;
 			}
-
 			pnode->parent = erase_node->parent;
 
 			std::swap(pnode->col, erase_node->col);
+		}
+
+		//删除节点是红色，没有影响，直接返回
+		//如果删除节点是红色，该节点不会存在只有一个节点的情况，要么其子节点都为黑色，要么没有子节点，删除不会影响高度平衡以及红黑树性质
+		if (erase_node->col == Tree::RBTree::NodeColor::Red)
+		{
+			return;
+		}
+
+		//删除节点颜色是黑色（删除节点就是erse_node本身或者是其右子树最小节点替代节点颜色为黑色）
+		do 
+		{
+			//替补节点是红色，删除节点是黑的，直接将其颜色修改为黑色即可
+			if (root_ == fix_node || fix_node && fix_node->col == Tree::RBTree::NodeColor::Red)
+			{
+				break;
+			}
+			
+			//下面考虑替补节点为空的情况
+			for (; root_ != fix_node && (fix_node == nullptr || fix_node->col == Tree::RBTree::NodeColor::Black) && fix_node_parent;)
+			{
+				if (fix_node == fix_node_parent->left)
+				{
+					pnode = fix_node_parent->right;
+					if (pnode && pnode->col == Tree::RBTree::NodeColor::Red)
+					{
+						pnode->col = Tree::RBTree::NodeColor::Black;
+						fix_node_parent->col = Tree::RBTree::NodeColor::Red;
+						RotateL(fix_node_parent);
+						pnode = fix_node_parent->right;
+					}
+
+					if (nullptr == pnode)
+					{
+						fix_node = fix_node_parent;
+					}
+					else if ((!pnode->right && !pnode->left) || (pnode->left && pnode->right)&&
+						pnode->left->col == Tree::RBTree::NodeColor::Black && pnode->right->col == Tree::RBTree::NodeColor::Black)
+					{
+						pnode->col = Tree::RBTree::NodeColor::Red;
+						fix_node = fix_node_parent;
+					}
+					else
+					{
+						if (!pnode->right || pnode->right->col == Tree::RBTree::NodeColor::Black)
+						{
+							if (pnode->left)
+							{
+								pnode->left->col = Tree::RBTree::NodeColor::Black;
+								RotateR(pnode);
+							}
+							pnode->col = Tree::RBTree::NodeColor::Red;
+							pnode = fix_node_parent->right;
+						}
+						pnode->col = fix_node_parent->col;
+						fix_node_parent->col = Tree::RBTree::NodeColor::Black;;
+						pnode->right->col = Tree::RBTree::NodeColor::Black;;
+						RotateL(fix_node_parent);
+						break;
+					}
+				}
+				else
+				{
+					pnode = fix_node_parent->left;
+					if (pnode && pnode->col == Tree::RBTree::NodeColor::Red)
+					{
+						pnode->col = Tree::RBTree::NodeColor::Black;
+						fix_node_parent->col = Tree::RBTree::NodeColor::Red;
+						RotateR(fix_node_parent);
+						pnode = fix_node_parent->left;
+					}
+
+					if (!pnode)
+					{
+						fix_node = fix_node_parent;
+					}
+					else if ((!pnode->right && !pnode->left) || (pnode->left && pnode->right) &&
+						pnode->left->col == Tree::RBTree::NodeColor::Black && pnode->right->col == Tree::RBTree::NodeColor::Black)
+					{
+						pnode->col = Tree::RBTree::NodeColor::Red;
+						fix_node = fix_node_parent;
+					}
+					else
+					{
+						if (!pnode->left || pnode->left->col == Tree::RBTree::NodeColor::Black)
+						{
+							if (pnode->right)
+							{
+								pnode->right->col = Tree::RBTree::NodeColor::Black;
+								RotateL(pnode);
+							}
+
+							pnode->col = Tree::RBTree::NodeColor::Red;
+							pnode = fix_node_parent->left;
+						}
+						pnode->col = fix_node_parent->col;
+						fix_node_parent->col = Tree::RBTree::NodeColor::Black;;
+						pnode->left->col = Tree::RBTree::NodeColor::Black;;
+						RotateR(fix_node_parent);
+						break;
+					}
+				}
+				fix_node_parent = (fix_node ? fix_node->parent : nullptr);
+			}
+
+
+		} while (false);
+			
+		if (fix_node)
+		{
+			fix_node->col = Tree::RBTree::NodeColor::Black;
 		}
 
 	}

@@ -136,18 +136,16 @@ void TestRBKeyTreeNode()
 		node->key = i;
 		nrb_tree.Insert(node);
 	}
-	MidDfsPrintTree(nrb_tree.GetRoot());
 
+	const auto node_size = 100000;
 	RBTree<StringIntKeyNode> srb_tree;
-	for (int i = 0; i < 100; ++i)
+	for (int i = 0; i < node_size; ++i)
 	{
 		auto node = std::make_shared<StringIntKeyNode>();
 		node->value = i;
-		node->key = std::to_string(100 -i);
+		node->key = std::to_string(node_size -i);
 		srb_tree.Insert(node);
 	}
-
-	MidDfsPrintTree(srb_tree.GetRoot());
 
 	auto find_node = srb_tree.Find(decltype(StringIntKeyNode::key)("1"));
 	if (find_node != srb_tree.End())
@@ -155,15 +153,15 @@ void TestRBKeyTreeNode()
 		LOG(INFO) << "Find node:[" << find_node->value << "]";
 	}
 
-	srb_tree.Erase<std::string>(decltype(StringIntKeyNode::key)("1"));
-
-	std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
-	std::for_each(nrb_tree.Begin(), nrb_tree.End(), [](const IntIntKeyNodePtr& node) {PrintNode(node); });
-	for (auto iter = nrb_tree.RBegin(); iter != nrb_tree.End(); --iter)
+	for (int i = 0; i < node_size; ++i)
 	{
-		PrintNode(*iter);
+		auto erase_node = std::to_string(i);
+		LOG(INFO) << "erase_node:[" << erase_node << "]";
+
+		srb_tree.Erase(erase_node);
 	}
 
+	std::for_each(srb_tree.Begin(), srb_tree.End(), [](const StringIntKeyNodePtr& node) {PrintNode(node); });
 
 	LOG(INFO) << "TestRBKeyTreeNode end ....";
 }
