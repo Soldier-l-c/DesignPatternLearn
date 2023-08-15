@@ -554,7 +554,8 @@ private:
 				break;
 			}
 			
-			//下面考虑替补节点为空的情况
+			//下面考虑替补节点为空的情况,以下逻辑拷贝与stl库tree的实现，逻辑暂时没完全搞懂，也可能还存在问题，
+			//以后有时间再梳理
 			for (; root_ != fix_node && (fix_node == nullptr || fix_node->col == Tree::RBTree::NodeColor::Black) && fix_node_parent;)
 			{
 				if (fix_node == fix_node_parent->left)
@@ -572,8 +573,8 @@ private:
 					{
 						fix_node = fix_node_parent;
 					}
-					else if ((!pnode->right && !pnode->left) || (pnode->left && pnode->right)&&
-						pnode->left->col == Tree::RBTree::NodeColor::Black && pnode->right->col == Tree::RBTree::NodeColor::Black)
+					else if ((!pnode->left || pnode->left->col == Tree::RBTree::NodeColor::Black) &&
+						(!pnode->right || pnode->right->col == Tree::RBTree::NodeColor::Black))
 					{
 						pnode->col = Tree::RBTree::NodeColor::Red;
 						fix_node = fix_node_parent;
@@ -585,9 +586,9 @@ private:
 							if (pnode->left)
 							{
 								pnode->left->col = Tree::RBTree::NodeColor::Black;
-								RotateR(pnode);
 							}
 							pnode->col = Tree::RBTree::NodeColor::Red;
+							RotateR(pnode);
 							pnode = fix_node_parent->right;
 						}
 						pnode->col = fix_node_parent->col;
@@ -612,8 +613,8 @@ private:
 					{
 						fix_node = fix_node_parent;
 					}
-					else if ((!pnode->right && !pnode->left) || (pnode->left && pnode->right) &&
-						pnode->left->col == Tree::RBTree::NodeColor::Black && pnode->right->col == Tree::RBTree::NodeColor::Black)
+					else if ((!pnode->left || pnode->left->col == Tree::RBTree::NodeColor::Black) &&
+						(!pnode->right || pnode->right->col == Tree::RBTree::NodeColor::Black))
 					{
 						pnode->col = Tree::RBTree::NodeColor::Red;
 						fix_node = fix_node_parent;
@@ -625,10 +626,10 @@ private:
 							if (pnode->right)
 							{
 								pnode->right->col = Tree::RBTree::NodeColor::Black;
-								RotateL(pnode);
 							}
 
 							pnode->col = Tree::RBTree::NodeColor::Red;
+							RotateL(pnode);
 							pnode = fix_node_parent->left;
 						}
 						pnode->col = fix_node_parent->col;
