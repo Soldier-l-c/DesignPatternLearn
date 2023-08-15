@@ -1,5 +1,13 @@
 #pragma once
 
+/*
+1.节点非红即黑。
+2.根节点是黑色。
+3.所有NULL结点称为叶子节点，且认为颜色为黑。
+4.所有红节点的子节点都为黑色。
+5.从任一节点到其叶子节点的所有路径上都包含相同数目的黑节点。
+*/
+
 namespace NRBTree
 {
 	template <class Node>
@@ -149,7 +157,7 @@ namespace NRBTree
 			return !(*this == right);
 		}
 
-		NodePtr operator*()
+		NodePtr& operator*()
 		{
 			return this->node_;
 		}
@@ -197,12 +205,12 @@ public:
 		
 		if (nullptr == erase_node)return;
 
-		EraseInternal(iterator(erase_node));
+		InternalErase(iterator(erase_node));
 	}
 
 	void Erase(iterator iter)
 	{
-		EraseInternal(iter);
+		InternalErase(iter);
 	}
 
 	template <class KeyOrValue>
@@ -432,16 +440,20 @@ private:
 		return node;
 	}
 
-	void EraseInternal(iterator erase_iter)
+	void InternalErase(iterator erase_iter)
 	{
 		NodePtr erase_node = erase_iter.node_;
 		++erase_iter;
 
+		//pnode 替换要删除节点的节点
 		auto pnode = erase_node;
+		//要真正删除节点的右子节点或者左子节点
 		NodePtr fix_node{ nullptr };
+		//fix_node_parent要真正删除节点的父节点
 		NodePtr fix_node_parent{ nullptr };
 
-		//先将删除节点有两个子节点的的情况，转换为删除节点最多有一个子节点的情况。默认使用右子树最小节点替换
+		//如果erase_node有一个节点，那么节点颜色一定是黑色，子节点颜色一定是红色
+		//fix_node为空或者是一个红色节点
 		if (erase_node->left == nullptr)
 		{
 			fix_node = erase_node->right;
@@ -452,9 +464,81 @@ private:
 		}
 		else
 		{
+			//先将删除节点有两个子节点的的情况，转换为删除节点最多有一个子节点的情况。默认使用右子树最小节点替换
+			//erase_node有两个子节点，此时pnode是其右子树中最小值
+			//pnode至多有一个子节点，因为其为最小值，不可能存在左子树，只可能存在右子节点。
+			//pnode的如果存在右子节点，那么pnode一定为黑色，右子节点一定为红色。为了满足性质5
+			//此时fix_node为空，或者是一个红色节点
 			pnode = erase_iter.node_;
 			fix_node = pnode->right;
 		}
+
+		//被删除的节点只有一个子节点
+		if (pnode == erase_node)
+		{
+			fix_node_parent = erase_node->parent;
+			if (erase_node == root_)
+			{
+				root_ = fix_node;
+			}
+			else if (fix_node_parent->right == erase_node)
+			{
+				fix_node_parent->right = fix_node;
+			}
+			else
+			{
+				fix_node_parent->left = fix_node;
+			}
+
+			if (fix_node)
+			{
+				fix_node->parent = fix_node_parent;
+			}
+		}
+		else
+		{
+			erase_node->left->parent = pnode;
+			pnode->left = erase_node->left;
+
+			//右子树删除右子树最小节点
+			//删除节点的右子树最小节点就是其右子节点
+			if (erase_node->right == pnode)
+			{
+				fix_node_parent = pnode;
+			}
+			else
+			{
+				fix_node_parent = pnode->parent;
+
+				//pnode一定是其父节点的左子节点，因为pnode是子树的最小值，所以不可能是右子节点
+				fix_node_parent->left = fix_node;
+				pnode->right = erase_node->right;
+
+				if (fix_node)
+				{
+					fix_node->parent = fix_node_parent;
+				}
+			}
+
+			//使用右子树最小节点替换被删除节点
+			if (root_ == erase_ndoe)
+			{
+				root_ = pnode;
+			}
+			else if (erase_node == erase_node->parent->left)
+			{
+				erase_node->parent->leff = pnode;
+			}
+			else
+			{
+				erase_node->parent->right = pnode;
+			}
+
+			pnode->parent = erase_node->parent;
+
+			std::swap(pnode->col, erase_node->col);
+		}
+
 	}
 
 	template <class KeyOrValue>
