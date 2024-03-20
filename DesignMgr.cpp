@@ -8,6 +8,7 @@
 #include "Test.h"
 #include "LeetCodeTest.h"
 #include "TreeTest.h"
+#include "SortTest.h"
 
 #define MAKE_PTR(_class)std::make_shared<_class>()
 
@@ -21,7 +22,8 @@ void CDesignMgr::Init()
 		MAKE_PTR(CObserver),
 		MAKE_PTR(CTest),
 		MAKE_PTR(LeetCodeTest),
-		MAKE_PTR(CTreeTest)
+		MAKE_PTR(CTreeTest),
+		MAKE_PTR(SortTest)
 	};
 }
 
