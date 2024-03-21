@@ -78,6 +78,9 @@
     <ClCompile Include="DijkstraTest.cpp">
       <Filter>Test</Filter>
     </ClCompile>
+    <ClCompile Include="SortTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -126,6 +129,12 @@
       <Filter>Tree</Filter>
     </ClInclude>
     <ClInclude Include="DijkstraTest.h">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="Sort.hpp">
+      <Filter>Test</Filter>
+    </ClInclude>
+    <ClInclude Include="SortTest.h">
       <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>

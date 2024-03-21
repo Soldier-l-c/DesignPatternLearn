@@ -1,10 +1,12 @@
 #include "stdafx.h"
 #include "Sort.hpp"
 #include "SortTest.h"
+#include <chrono>
 
 void rand_A(std::vector<int32_t>& A, int32_t count)
 {
     A.clear();
+    
     srand((unsigned)time(NULL)); //提供随机种子即随机数开始数字
     for (int i = 0; i < count; ++i)
     {
@@ -34,10 +36,13 @@ void SortTest::StartTest()
 {
     std::vector<int32_t> value_list;
 
-    TestSort(Bubble, "Bubble");
-    TestSort(Selection, "Selection");
-    TestSort(Insertion, "Insertion");
+    //TestSort(Bubble, "Bubble");
+    //TestSort(Selection, "Selection");
+    //TestSort(Insertion, "Insertion");
     TestSort(Quick, "Quick");
     TestSort(Shell, "Shell");
     TestSort(MergeSort, "MergeSort");
+    TestSort(HeapSink, "HeapSink");
+    //TestSort(HeapUpward, "HeapUpward");
+
 }

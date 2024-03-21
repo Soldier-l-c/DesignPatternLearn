@@ -92,21 +92,24 @@ namespace Sort
 			return;
 
 		auto be = begin;
-		auto en = end;
+		auto en = end+1;
 		const auto& key = value_list[be];
 
 		while (be < en)
 		{
-			while (be < en && cmp(value_list[be], key))++be;
-			while (en > be && cmp(key, value_list[en]))--en;
+			while (++be < en && cmp(value_list[be], key));
+			while (--en > be && cmp(key, value_list[en]));
+
+			if (be >= en)
+				break;
+
 			std::swap(value_list[be], value_list[en]);
 		}
 
-		std::swap(value_list[begin], value_list[be]);
+		std::swap(value_list[begin], value_list[en]);
 
-		Quick(value_list, begin, be - 1, cmp);
-		Quick(value_list, be + 1, end, cmp);
-
+		Quick(value_list, begin, en - 1, cmp);
+		Quick(value_list, en + 1, end, cmp);
 	}
 
 	template<class Value, class Cmp = std::less<Value>>
@@ -207,5 +210,83 @@ namespace Sort
 		auto size = value_list.size();
 		MergeSort(value_list, 0, size - 1, cmp);
 	}
+
+	//∂—≈≈–Ú
+
+	//…œ∏°
+	template<class Value, class Cmp = std::less<Value>>
+	void Upward(std::vector<Value>& value_list, int32_t index, Cmp cmp = Cmp())
+	{
+		while (index > 0)
+		{
+			auto parent_index = (index+1) / 2-1;
+			if (cmp(value_list[index], value_list[parent_index]))
+			{
+				std::swap(value_list[index], value_list[parent_index]);
+			}
+			else
+			{
+				break;
+			}
+
+			index = parent_index;
+		}
+	}
+
+	//œ¬≥¡
+	template<class Value, class Cmp = std::less<Value>>
+	void Sink(std::vector<Value>& value_list, int32_t index, int32_t size, Cmp cmp = Cmp())
+	{
+		while (index <= (size)/2-1)
+		{
+			auto left_index		= index * 2 + 1;
+			auto right_index	= index * 2 + 2;
+
+			if (left_index >= size)
+				break;
+
+			auto cur_index = (right_index < size && cmp(value_list[left_index], value_list[right_index])) ? right_index : left_index;
+
+			if (!cmp(value_list[index], value_list[cur_index]))
+				break;
+
+			std::swap(value_list[index], value_list[cur_index]);
+
+			index = cur_index;
+		}
+	}
+
+	template<class Value, class Cmp = std::less<Value>>
+	void HeapSink(std::vector<Value>& value_list, Cmp cmp = Cmp())
+	{
+		int32_t size = value_list.size();
+		for (auto index = size - 1; index >= 0; --index)
+		{
+			Sink(value_list, index, size, cmp);
+		}
+
+		while (size-- > 0)
+		{
+			std::swap(value_list[0], value_list[size]);
+			Sink(value_list, 0, size, cmp);
+		}
+	}
+
+	template<class Value, class Cmp = std::less<Value>>
+	void HeapUpward(std::vector<Value>& value_list, Cmp cmp = Cmp())
+	{
+		int32_t size = value_list.size();
+		for (auto index = size - 1; index >= 0; --index)
+		{
+			Upward(value_list, index, cmp);
+		}
+
+		while (size-- > 0)
+		{
+			std::swap(value_list[0], value_list[size]);
+			Sink(value_list, 0, size, cmp);
+		}
+	}
+
 
 }
