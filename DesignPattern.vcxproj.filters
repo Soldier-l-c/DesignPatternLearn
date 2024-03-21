@@ -75,6 +75,9 @@
     <ClCompile Include="TreeTest.cpp">
       <Filter>Tree</Filter>
     </ClCompile>
+    <ClCompile Include="DijkstraTest.cpp">
+      <Filter>Test</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="stdafx.h">
@@ -121,6 +124,9 @@
     </ClInclude>
     <ClInclude Include="TreeTest.h">
       <Filter>Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="DijkstraTest.h">
+      <Filter>Test</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

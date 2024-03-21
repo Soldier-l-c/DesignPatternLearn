@@ -143,6 +143,7 @@
     <ClCompile Include="Adaper.cpp" />
     <ClCompile Include="DesignBase.cpp" />
     <ClCompile Include="DesignMgr.cpp" />
+    <ClCompile Include="DijkstraTest.cpp" />
     <ClCompile Include="LeetCodeTest.cpp" />
     <ClCompile Include="Logger.cpp" />
     <ClCompile Include="main.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="Adaper.h" />
     <ClInclude Include="DesignBase.h" />
     <ClInclude Include="DesignMgr.h" />
+    <ClInclude Include="DijkstraTest.h" />
     <ClInclude Include="LeetCodeTest.h" />
     <ClInclude Include="Logger.h" />
     <ClInclude Include="noncopyable.h" />
