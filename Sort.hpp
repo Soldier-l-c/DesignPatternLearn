@@ -92,13 +92,13 @@ namespace Sort
 			return;
 
 		auto be = begin;
-		auto en = end+1;
+		auto en = end;
 		const auto& key = value_list[be];
 
 		while (be < en)
 		{
-			while (++be < en && cmp(value_list[be], key));
-			while (--en > be && cmp(key, value_list[en]));
+			while (en > be && !cmp(value_list[en], key))--en;
+			while (be < en && !cmp(key, value_list[be]))++be;
 
 			if (be >= en)
 				break;
@@ -106,10 +106,10 @@ namespace Sort
 			std::swap(value_list[be], value_list[en]);
 		}
 
-		std::swap(value_list[begin], value_list[en]);
+		std::swap(value_list[begin], value_list[be]);
 
-		Quick(value_list, begin, en - 1, cmp);
-		Quick(value_list, en + 1, end, cmp);
+		Quick(value_list, begin, be - 1, cmp);
+		Quick(value_list, be + 1, end, cmp);
 	}
 
 	template<class Value, class Cmp = std::less<Value>>
