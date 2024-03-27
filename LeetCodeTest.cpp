@@ -269,6 +269,206 @@ void ExpandPath(std::wstring& path_ex)
     }
 }
 
+
+template <class Key, class Value>
+class LFUCache
+{
+public:
+
+    template <typename KEY, typename VALUE>
+    struct DuNode
+    {
+        KEY key;
+        VALUE value;
+
+        using ThisNodePtr = std::shared_ptr<DuNode<KEY, VALUE>>;
+
+        ThisNodePtr pre{ nullptr };
+        ThisNodePtr suf{ nullptr };
+        int reference{ 0 };
+    };
+
+    //双向链表
+    template <class KEY, class VALUE>
+    class DuLinkList
+    {
+    public:
+        using Node = DuNode<KEY, VALUE>;
+        using NodePtr = typename Node::ThisNodePtr;
+
+        DuLinkList()
+        {
+            head_ = std::make_shared<DuNode<KEY, VALUE>>();
+            tail_ = std::make_shared<DuNode<KEY, VALUE>>();
+            head_->suf = tail_;
+            tail_->pre = head_;
+        };
+
+        ~DuLinkList()
+        {
+            //主动析构，防止循环引用无法析构
+            while (head_->suf != tail_)
+            {
+                RemoveLast();
+            }
+
+            head_->suf = nullptr;
+            tail_->pre = nullptr;
+        }
+
+    public:
+        void MoveToHead(NodePtr& node)
+        {
+            RemoveNode(node);
+            AddNode(node);
+        }
+
+        void AddNode(NodePtr& node)
+        {
+            auto suf = head_->suf;
+            node->suf = suf;
+            suf->pre = node;
+
+            head_->suf = node;
+            node->pre = head_;
+        }
+
+        void RemoveNode(NodePtr& node)
+        {
+            auto pre = node->pre;
+            auto suf = node->suf;
+            pre->suf = suf;
+            suf->pre = pre;
+        }
+
+        NodePtr RemoveLast()
+        {
+            auto node = tail_->pre;
+            if (node == head_)return nullptr;
+
+            RemoveNode(node);
+
+            return node;
+        }
+
+        bool Empty()
+        {
+            return head_->suf == tail_;
+        }
+
+    private:
+        NodePtr head_;
+        NodePtr tail_;
+    };
+
+    //using Key = int;
+    //using Value = int;
+
+    using NodePtr = typename DuLinkList<Key, Value>::NodePtr;
+
+    LFUCache(Key capacity)
+    {
+        max_size_ = capacity;
+    }
+
+    Value get(Key key)
+    {
+        auto iter = node_list_.find(key);
+        if (iter == node_list_.end())return Value();
+
+        auto& node = iter->second;
+        RemoveFromTableList(node->reference++, node);
+        AddToTableList(node->reference, node);
+
+        return node->value;
+    }
+
+    void put(Key key, Value value)
+    {
+        NodePtr node;
+
+        auto iter = node_list_.find(key);
+
+        //务必插入前检查是否需要删除最少使用的节点
+        if (cur_size_ == max_size_ && iter == node_list_.end())
+        {
+            //移除使用次数最少，最近未使用的节点
+            auto node = RemoveLast(table_list_.begin()->first);
+            --cur_size_;
+            node_list_.erase(node->key);
+        }
+
+        if (iter == node_list_.end())
+        {
+            node = std::make_shared<DuLinkList<Key, Value>::Node>();
+            node->key = key;
+            node->value = value;
+            node_list_.insert({ key, node });
+            //新插入节点才需要增加大小
+            ++cur_size_;
+        }
+        else
+        {
+            node = iter->second;
+            node->value = value;
+        }
+
+        //从原有队列删除节点
+        RemoveFromTableList(node->reference++, node);
+
+        //添加到新队列
+        AddToTableList(node->reference, node);
+    }
+
+private:
+    void RemoveFromTableList(int reference, NodePtr& node)
+    {
+        if (reference != 0)
+        {
+            auto& cur_node_list = table_list_[reference];
+            cur_node_list->RemoveNode(node);
+            if (cur_node_list->Empty())
+            {
+                cur_node_list = nullptr;
+                table_list_.erase(reference);
+            }
+        }
+    }
+
+    NodePtr RemoveLast(int reference)
+    {
+        auto& cur_node_list = table_list_[reference];
+        auto node = cur_node_list->RemoveLast();
+        if (cur_node_list->Empty())
+        {
+            cur_node_list = nullptr;
+            table_list_.erase(reference);
+        }
+
+        return node;
+    }
+
+    void AddToTableList(int reference, NodePtr& node)
+    {
+        auto& new_node_list = table_list_[reference];
+
+        if (!new_node_list)
+            new_node_list = std::make_shared<DuLinkList<Key, Value>>();
+
+        new_node_list->AddNode(node);
+    }
+
+private:
+    using DuLinkListPtr = std::shared_ptr<DuLinkList<Key, Value>>;
+
+    std::map<int, DuLinkListPtr>table_list_;
+    std::unordered_map<Key, NodePtr>node_list_;
+
+    int max_size_{ 0 };
+    int cur_size_{ 0 };
+};
+
+
 #include<atlstr.h>
 void LeetCodeTest::StartTest()
 {
@@ -282,4 +482,15 @@ void LeetCodeTest::StartTest()
     LRUCache<int32_t, int32_t> i(10);
     i.put(1, 10);
     LOG(INFO) << "LRUCache get 1:[" << i.get(1) << "]";
+
+    LFUCache<int32_t, std::string> lfu(2);
+    lfu.put(1, "1sdsd");
+    lfu.put(2, "2sdsd");
+    lfu.get(1);
+    lfu.put(3, "3sdsd");
+    LOG(INFO) << "LFUCache get 1:[" << lfu.get(1) << "]";
+
+    LOG(INFO) << "LFUCache get 2:[" << lfu.get(2) << "]";
+
+
 }
