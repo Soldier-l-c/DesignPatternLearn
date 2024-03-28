@@ -272,21 +272,21 @@ namespace Sort
 		}
 	}
 
-	template<class Value, class Cmp = std::less<Value>>
-	void HeapUpward(std::vector<Value>& value_list, Cmp cmp = Cmp())
-	{
-		int32_t size = value_list.size();
-		for (auto index = size - 1; index >= 0; --index)
-		{
-			Upward(value_list, index, cmp);
-		}
+	//template<class Value, class Cmp = std::less<Value>>
+	//void HeapUpward(std::vector<Value>& value_list, Cmp cmp = Cmp())
+	//{
+	//	int32_t size = value_list.size();
+	//	for (auto index = size - 1; index >= 0; --index)
+	//	{
+	//		Upward(value_list, index, cmp);
+	//	}
 
-		while (size-- > 0)
-		{
-			std::swap(value_list[0], value_list[size]);
-			Sink(value_list, 0, size, cmp);
-		}
-	}
+	//	while (size-- > 0)
+	//	{
+	//		std::swap(value_list[0], value_list[size]);
+	//		Sink(value_list, 0, size, cmp);
+	//	}
+	//}
 
 
 }
