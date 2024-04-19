@@ -1,13 +1,38 @@
 #include "stdafx.h"
 #include "LeetCodeTest.h"
+#include <set>
+#include <unordered_map>
 
-template <class KEY, class VALUE>
-struct DNode
+template <typename KEY, typename VALUE>
+struct DuNode
 {
     KEY key;
     VALUE value;
-    std::shared_ptr<DNode<KEY, VALUE>> pre{ nullptr };
-    std::shared_ptr<DNode<KEY, VALUE>> suf{ nullptr };
+
+    using ThisNodePtr = std::shared_ptr<DuNode<KEY, VALUE>>;
+    //using ThisNodePtr = DuNode<KEY, VALUE>*;
+
+    ThisNodePtr pre{ nullptr };
+    ThisNodePtr suf{ nullptr };
+
+    static ThisNodePtr CreateNode(const KEY& k, const VALUE& v)
+    {
+        //return new TreeNode<V>(v);
+        return std::make_shared<DuNode<KEY, VALUE>>(k, v);
+    }
+
+    DuNode(const KEY& k, const VALUE& v) :key(k), value(v), pre(nullptr), suf(nullptr) {};
+
+    int reference{ 0 };
+};
+
+template<class Value>
+struct ListNode
+{
+    Value val;
+
+    std::shared_ptr<ListNode<Value>> next;
+    ListNode(const Value& v) :val(v), next(nullptr) {};
 };
 
 //https://leetcode.cn/problems/lru-cache/
@@ -15,14 +40,12 @@ template <class KEY, class VALUE>
 class LRUCache
 {
 public:
-
-    using ThisNode = DNode<KEY, VALUE>;
-    using NodePtr = std::shared_ptr<ThisNode>;
+    using NodePtr = typename DuNode<KEY, VALUE>::ThisNodePtr;
 
     LRUCache(int capacity) :max_num_(capacity)
     {
-        head_ = std::make_shared<ThisNode>();
-        tail_ = std::make_shared<ThisNode>();
+        head_ = DuNode<KEY, VALUE>::CreateNode(KEY(), VALUE());
+        tail_ = DuNode<KEY, VALUE>::CreateNode(KEY(), VALUE());
         head_->suf = tail_;
         tail_->pre = head_;
     }
@@ -47,9 +70,7 @@ public:
             return;
         }
 
-        node = std::make_shared<ThisNode>();
-        node->value = value;
-        node->key = key;
+        node = DuNode<KEY, VALUE>::CreateNode(key, value);
         addNode(node);
         ++cur_size_;
 
@@ -105,61 +126,6 @@ private:
 
     int cur_size_{ 0 };
 };
-
-/**
- * Your LRUCache object will be instantiated and called as such:
- * LRUCache* obj = new LRUCache(capacity);
- * int param_1 = obj->get(key);
- * obj->put(key,value);
- */
-//lru-cache
-
-template<class Value>
-struct ListNode
-{
-    Value val;
-
-    std::shared_ptr<ListNode<Value>> next;
-    ListNode(const Value& v) :val(v), next(nullptr) {};
-};
-
-using IntNodePtr = std::shared_ptr<ListNode<int32_t>>;
-
-template<class NodePtr>
-NodePtr ReverseList(const NodePtr& head)
-{
-    auto cur_node = head;
-    decltype(cur_node) pre_node = nullptr;
-
-    while (cur_node)
-    {
-        auto next_node = cur_node->next;
-        cur_node->next = pre_node;
-        pre_node = cur_node;
-        cur_node = next_node;
-    }
-
-    return pre_node;
-}
-
-void TestList()
-{
-    auto head = std::make_shared<ListNode<int32_t>>(10);
-    auto temp = head;
-    for(int32_t i = 9;i>=0;--i)
-    {
-        temp->next  = std::make_shared<ListNode<int32_t>>(i);
-        temp = temp->next;
-    }
-    auto rev = ReverseList(head);
-
-    auto&& logger = LOG(INFO);
-    while (rev)
-    {
-        logger << " " << rev->val;
-        rev = rev->next;
-    }
-}
 
 class Solution 
 {
@@ -220,158 +186,312 @@ public:
         return Count(words1, words2);
     }
 
-public:
-
-    //using IntNodePtr = ListNode*;
-
-    auto deleteDuplicates(IntNodePtr head)->decltype(head)
+    //1.找出最小操作数，其实就是找到最多的不需要操作的数的个数。
+    //2.要找出最多不需要操作的个数，首先需要排序去重，这样不需要操作的数据肯定都是在一个区间里的。
+    //3.如何定义这样的区间：对于区间的data[end]- data[begin] < len时，这时候区间里的数字不需要操作，只操作区间外的数字即可，并且区间外的数字都需要操作。
+    //4.使用滑动窗口找出所有满足3条件的区间，同时获取最小操作数。
+    int minOperations(std::vector<int>& nums) 
     {
-        if (!head || !head->next)
-            return head;
+        std::set<int> sort_list;
+        for (const auto i : nums)sort_list.insert(i);
+        auto len = nums.size();
+        auto res = len;
+        auto iter_l = sort_list.begin(), iter_r = sort_list.begin();
 
-        decltype(head) pre{ nullptr }, ret{ nullptr };
-        
-        auto low = head;
-        auto fast = low->next;
+        std::deque<int>window;
 
-        while (low)
+        while (iter_r != sort_list.end())
         {
-            while (fast && fast->val == low->val)fast = fast->next;
-
-            if (fast == low->next)
+            window.push_back(*(iter_r++));
+            while (window.back() - window.front() >= len)
             {
-                if (pre)
-                {
-                    pre->next = low;
-                }
-                pre = low;
-                pre->next = nullptr;
+                window.pop_front();
             }
+            res = min(res, len - window.size());
+        }
+        return res;
+    }
 
-            ret = ret ? ret : pre;
+    //int Gcd
+    int Gcd(int m, int n)
+    {
+        while (n != 0)
+        {
+            auto temp = m % n;
+            m = n;
+            n = temp;
+        }
+        return m;
+    }
 
-            low = fast;
-            fast = (fast ? fast->next : fast);
+    void InitGcdList()
+    {
+        gcd_list_ = decltype(gcd_list_)(51, std::vector<int>());
+        for (int i = 1; i <= 50; ++i)
+        {
+            for (int j = 1; j <= 50; ++j)
+            {
+                if (Gcd(i, j) == 1)
+                {
+                    gcd_list_[i].push_back(j);
+                    gcd_list_[j].push_back(i);
+                }
+            }
+        }
+    }
+
+    using NodeList = std::vector<std::vector<int>>;
+
+    void DfsGetCoprimes(const NodeList& node_list, const std::vector<int>& nums, std::vector<int>& res,
+        std::vector<int>&num_2node_index, std::vector<int>& deep, int root, int pre)
+    {
+        const auto& gcd = gcd_list_[nums[root]];
+        for (const auto item : gcd)
+        {
+            const auto node_index = num_2node_index[item];
+            if (node_index == -1)continue;
+            if (res[root] == -1 || deep[res[root]] < deep[node_index])res[root] = node_index;
         }
 
-        return ret;
+        auto node = num_2node_index[nums[root]];
+        num_2node_index[nums[root]] = root;
+
+        const auto& childs = node_list[root];
+        if (childs.empty())return;
+
+        for (const auto child : childs)
+        {
+            if (child == pre)continue;
+            deep[child] = deep[root] + 1;
+            DfsGetCoprimes(node_list, nums, res, num_2node_index, deep, child, root);
+        }
+        num_2node_index[nums[root]] = node;
     }
 
+    std::vector<int> getCoprimes(std::vector<int>& nums, NodeList& edges)
+    {
+        if (nums.empty())return {};
+        NodeList node_list(nums.size(), std::vector<int>());
+
+        std::vector<int>res(nums.size(), -1);
+
+        for (const auto& item : edges)
+        {
+            if (item.size() != 2)continue;
+            node_list[item.front()].push_back(item.back());
+            node_list[item.back()].push_back(item.front());
+        }
+
+        InitGcdList();
+
+        std::vector<int>num_2node_index(51, -1);
+        std::vector<int> deep(nums.size(), 0);
+
+        DfsGetCoprimes(node_list, nums, res, num_2node_index, deep,0, -1);
+
+        return res;
+    }
+
+    /*
+C++无相图dfs遍历。
+分别让每个初始感染节点去感染，找出独立感染节点数（只有该节点能联通，其他感染节点联通的节点）最多的初始感染节点
+    */
+
+    struct NodeInfo
+    {
+        std::vector<int> malware_by;
+        bool initial{ false };
+        int reduce{ 0 };
+    };
+
+    void DfsSpread(const std::vector<std::vector<int>>& graph, std::vector<NodeInfo>& node_list, std::vector<bool>& visit, int cur_node, int start)
+    {
+        auto& node_info = node_list[cur_node];
+        if (visit[cur_node] || (node_info.initial && start != cur_node))
+        {
+            return;
+        }
+
+        node_info.malware_by.push_back(start);
+        visit[cur_node] = true;
+
+        for (auto i = 0; i < graph.size(); ++i)
+        {
+            if (graph[cur_node][i] && i != cur_node)
+            {
+                DfsSpread(graph, node_list, visit, i, start);
+            }
+        }
+
+        return;
+    }
+
+    int minMalwareSpread(std::vector<std::vector<int>>& graph, std::vector<int>& initial)
+    {
+        std::vector<NodeInfo> node_list(graph.size(), NodeInfo());
+
+        int res{ (int)graph.size() }, max_reduce{ 0 };
+
+        for (auto i : initial)
+        {
+            auto& node_info = node_list[i];
+            node_info.initial = true;
+        }
+
+        for (auto i : initial)
+        {
+            std::vector<bool>visit(graph.size(), false);
+            DfsSpread(graph, node_list, visit, i, i);
+        }
+
+        for (const auto& item : node_list)
+        {
+            if (item.malware_by.size() == 1)
+            {
+                auto& reduce = node_list[item.malware_by[0]].reduce;
+                ++reduce;
+
+                if (max_reduce <= reduce)
+                {
+                    res = ((max_reduce == reduce) && res < item.malware_by[0]) ? res : item.malware_by[0];
+                    max_reduce = reduce;
+                }
+            }
+        }
+
+        return res;
+    }
+
+    std::vector<int> findOriginalArray(std::vector<int>& changed) 
+    {
+        const int changed_size = changed.size();
+        const auto original_size = changed_size / 2;
+        if (changed_size == 0 || changed_size % 2)return {};
+
+        std::vector<int> original(original_size, 0);
+        std::vector<bool> changed_list(changed_size, false);
+        std::sort(changed.begin(), changed.end());
+
+        auto low = changed.begin();
+        auto fast = low + 1;
+        auto index = 0;
+        while (fast != changed.end())
+        {
+            while (low != fast && changed_list[low - changed.begin()])++low;
+            if (low == fast && ++fast == changed.end())return {};
+
+            fast = std::lower_bound(fast, changed.end(), (*low) * 2);
+            if (fast == changed.end() || *fast != (*low) * 2)return {};
+
+            changed_list[fast - changed.begin()] = true;
+
+            original[index++] = *(low);
+            low++; fast++;
+        }
+
+        if (index != original_size)return {};
+
+        return original;
+    }
+
+private:
+    std::vector<std::vector<int>>gcd_list_;
 };
 
-void ExpandPath(std::wstring& path_ex)
+//双向链表
+template <class KEY, class VALUE>
+class DuLinkList
 {
-    wchar_t buffer[1024]{ 0 };
-    if (!path_ex.empty() && path_ex[0] == L'%')
-    {
-        ExpandEnvironmentStrings(path_ex.c_str(), buffer, 1024);
-        path_ex = buffer;
-    }
-}
+public:
+    using Node = DuNode<KEY, VALUE>;
+    using NodePtr = typename Node::ThisNodePtr;
 
+    DuLinkList()
+    {
+        head_ = CreateNode(KEY(),VALUE());
+        tail_ = CreateNode(KEY(), VALUE());
+        head_->suf = tail_;
+        tail_->pre = head_;
+    };
+
+    ~DuLinkList()
+    {
+        //主动析构，防止循环引用无法析构
+        while (!Empty())
+        {
+            RemoveLast();
+        }
+
+        head_->suf = nullptr;
+        tail_->pre = nullptr;
+    }
+
+    NodePtr Head() { return head_; };
+    NodePtr Tail() { return tail_; };
+
+public:
+    void MoveToHead(NodePtr& node)
+    {
+        RemoveNode(node);
+        AddNode(node);
+    }
+
+    void AddNode(NodePtr& node)
+    {
+        auto suf = head_->suf;
+        node->suf = suf;
+        suf->pre = node;
+
+        head_->suf = node;
+        node->pre = head_;
+    }
+
+    void RemoveNode(NodePtr& node)
+    {
+        auto pre = node->pre;
+        auto suf = node->suf;
+        pre->suf = suf;
+        suf->pre = pre;
+    }
+
+    NodePtr RemoveLast()
+    {
+        auto node = tail_->pre;
+        if (node == head_)return nullptr;
+
+        RemoveNode(node);
+
+        return node;
+    }
+
+    bool Empty()
+    {
+        return head_->suf == tail_;
+    }
+
+    auto CreateNode(const KEY& key, const VALUE& value)->NodePtr
+    {
+        return DuNode<KEY, VALUE>::CreateNode(key, value);
+    }
+
+private:
+    NodePtr head_;
+    NodePtr tail_;
+};
 
 template <class Key, class Value>
 class LFUCache
 {
 public:
 
-    template <typename KEY, typename VALUE>
-    struct DuNode
-    {
-        KEY key;
-        VALUE value;
-
-        using ThisNodePtr = std::shared_ptr<DuNode<KEY, VALUE>>;
-
-        ThisNodePtr pre{ nullptr };
-        ThisNodePtr suf{ nullptr };
-        int reference{ 0 };
-    };
-
-    //双向链表
-    template <class KEY, class VALUE>
-    class DuLinkList
-    {
-    public:
-        using Node = DuNode<KEY, VALUE>;
-        using NodePtr = typename Node::ThisNodePtr;
-
-        DuLinkList()
-        {
-            head_ = std::make_shared<DuNode<KEY, VALUE>>();
-            tail_ = std::make_shared<DuNode<KEY, VALUE>>();
-            head_->suf = tail_;
-            tail_->pre = head_;
-        };
-
-        ~DuLinkList()
-        {
-            //主动析构，防止循环引用无法析构
-            while (head_->suf != tail_)
-            {
-                RemoveLast();
-            }
-
-            head_->suf = nullptr;
-            tail_->pre = nullptr;
-        }
-
-    public:
-        void MoveToHead(NodePtr& node)
-        {
-            RemoveNode(node);
-            AddNode(node);
-        }
-
-        void AddNode(NodePtr& node)
-        {
-            auto suf = head_->suf;
-            node->suf = suf;
-            suf->pre = node;
-
-            head_->suf = node;
-            node->pre = head_;
-        }
-
-        void RemoveNode(NodePtr& node)
-        {
-            auto pre = node->pre;
-            auto suf = node->suf;
-            pre->suf = suf;
-            suf->pre = pre;
-        }
-
-        NodePtr RemoveLast()
-        {
-            auto node = tail_->pre;
-            if (node == head_)return nullptr;
-
-            RemoveNode(node);
-
-            return node;
-        }
-
-        bool Empty()
-        {
-            return head_->suf == tail_;
-        }
-
-    private:
-        NodePtr head_;
-        NodePtr tail_;
-    };
-
-    //using Key = int;
-    //using Value = int;
-
     using NodePtr = typename DuLinkList<Key, Value>::NodePtr;
 
-    LFUCache(Key capacity)
+    LFUCache(int capacity)
     {
         max_size_ = capacity;
     }
 
-    Value get(Key key)
+    Value get(const Key& key)
     {
         auto iter = node_list_.find(key);
         if (iter == node_list_.end())return Value();
@@ -383,7 +503,7 @@ public:
         return node->value;
     }
 
-    void put(Key key, Value value)
+    void put(const Key& key, const Value& value)
     {
         NodePtr node;
 
@@ -400,9 +520,7 @@ public:
 
         if (iter == node_list_.end())
         {
-            node = std::make_shared<DuLinkList<Key, Value>::Node>();
-            node->key = key;
-            node->value = value;
+            node = CreateNode(key, value);
             node_list_.insert({ key, node });
             //新插入节点才需要增加大小
             ++cur_size_;
@@ -458,6 +576,11 @@ private:
         new_node_list->AddNode(node);
     }
 
+    auto CreateNode(const Key& key, const Key& value)->NodePtr
+    {
+        return DuNode<Key, Value>::CreateNode(key, value);
+    }
+
 private:
     using DuLinkListPtr = std::shared_ptr<DuLinkList<Key, Value>>;
 
@@ -468,29 +591,225 @@ private:
     int cur_size_{ 0 };
 };
 
-
-#include<atlstr.h>
-void LeetCodeTest::StartTest()
+template <typename NodePtr>
+auto DeleteDuplicates(NodePtr head)->decltype(head)
 {
-    //TestList();
+    if (!head || !head->next)
+        return head;
 
+    decltype(head) pre{ nullptr }, ret{ nullptr };
+
+    auto low = head;
+    auto fast = low->next;
+
+    while (low)
+    {
+        while (fast && fast->val == low->val)fast = fast->next;
+
+        if (fast == low->next)
+        {
+            if (pre)
+            {
+                pre->next = low;
+            }
+            pre = low;
+            pre->next = nullptr;
+        }
+
+        ret = ret ? ret : pre;
+
+        low = fast;
+        fast = (fast ? fast->next : fast);
+    }
+
+    return ret;
+}
+
+template<class NodePtr>
+NodePtr ReverseList(const NodePtr& head)
+{
+    auto cur_node = head;
+    decltype(cur_node) pre_node = nullptr;
+
+    while (cur_node)
+    {
+        auto next_node = cur_node->next;
+        cur_node->next = pre_node;
+        pre_node = cur_node;
+        cur_node = next_node;
+    }
+
+    return pre_node;
+}
+
+template<class NodePtr>
+NodePtr ReverseDList(const NodePtr& head)
+{
+    auto cur_node = head;
+    decltype(cur_node) pre_node = nullptr;
+
+    while (cur_node)
+    {
+        std::swap(cur_node->pre, cur_node->suf);
+        pre_node = cur_node;
+        cur_node = cur_node->pre;
+    }
+
+    return pre_node;
+}
+
+template<class NodePtr>
+void PrintDList(NodePtr head)
+{
+    auto&& logger = LOG(INFO);
+    logger << "PrintDList:";
+    while (head)
+    {
+        logger << head->value << " ";
+        head = head->suf;
+    }
+}
+
+template<class NodePtr>
+void PrintList(NodePtr head)
+{
+    auto&& logger = LOG(INFO);
+    logger << "PrintList:";
+    while (head)
+    {
+        logger << head->val << " ";
+        head = head->next;
+    }
+}
+
+void TestList()
+{
+    auto head = std::make_shared<ListNode<int32_t>>(10);
+    auto temp = head;
+    for (int32_t i = 9; i >= 0; --i)
+    {
+        temp->next = std::make_shared<ListNode<int32_t>>(i);
+        temp = temp->next;
+    }
+
+    PrintList(head);
+    auto rev = ReverseList(head);
+    PrintList(rev);
+}
+
+void TestDuList()
+{
+    DuLinkList<int, int> dlist;
+    for (int i = 0; i < 10; ++i)
+    {
+        auto node = dlist.CreateNode(i, i);
+        dlist.AddNode(node);
+    }
+
+    PrintDList(dlist.Head());
+    ReverseDList(dlist.Head());
+    PrintDList(dlist.Tail());
+    ReverseDList(dlist.Tail());
+}
+
+void TestLRU()
+{
     LRUCache<std::string, int32_t> l(10);
     l.put("1", 10);
-    LOG(INFO)<<"LRUCache get 1:[" << l.get("1")<<"]";
-    
+    LOG(INFO) << "LRUCache get 1:[" << l.get("1") << "]";
 
     LRUCache<int32_t, int32_t> i(10);
     i.put(1, 10);
     LOG(INFO) << "LRUCache get 1:[" << i.get(1) << "]";
-
-    LFUCache<int32_t, std::string> lfu(2);
-    lfu.put(1, "1sdsd");
-    lfu.put(2, "2sdsd");
-    lfu.get(1);
-    lfu.put(3, "3sdsd");
-    LOG(INFO) << "LFUCache get 1:[" << lfu.get(1) << "]";
-
-    LOG(INFO) << "LFUCache get 2:[" << lfu.get(2) << "]";
-
-
 }
+
+void TestLFU()
+{
+    LFUCache<std::string, std::string> lfu(2);
+    lfu.put("q", "qqq");
+    lfu.put("p", "ppp");
+    lfu.get("q");
+    lfu.put("m", "mmmm");
+
+    LOG(INFO) << "LFUCache get q:[" << lfu.get("q") << "]";
+
+    LOG(INFO) << "LFUCache get p:[" << lfu.get("p") << "]";
+
+    LOG(INFO) << "LFUCache get m:[" << lfu.get("m") << "]";
+}
+
+void LeetCodeTest::StartTest()
+{
+    TestList();
+    TestLRU();
+    TestLFU();
+    TestDuList();
+}
+
+class ThroneInheritance
+{
+public:
+
+    template <class V>
+    struct TreeNode
+    {
+        V val;
+        using NodePtr = std::shared_ptr<TreeNode<V>>;
+        //using NodePtr = TreeNode<V>*;
+        std::vector<NodePtr> child_list;
+        bool alive;
+        TreeNode(const V& v) :val(v), alive(true) {};
+
+        static NodePtr CreateNode(const V& v)
+        {
+            //return new TreeNode<V>(v);
+            return std::make_shared<TreeNode<V>>(v);
+        }
+    };
+
+    using Value = std::string;
+    using NodePtr = typename TreeNode<Value>::NodePtr;
+
+    template <class V>
+    auto PreDfsTree(const NodePtr& root, std::vector<V>& res)->void
+    {
+        if (!root)return;
+        if (root->alive)res.push_back(root->val);
+        for (const auto& item : root->child_list)
+        {
+            PreDfsTree(item, res);
+        }
+    }
+
+    ThroneInheritance(Value kingName)
+    {
+        root_ = TreeNode<Value>::CreateNode(kingName);
+        node_list_.insert({ kingName, root_ });
+    }
+
+    void birth(Value parentName, Value childName)
+    {
+        auto parent_node = node_list_[parentName];
+        auto child_node = TreeNode<Value>::CreateNode(childName);
+        parent_node->child_list.emplace_back(child_node);
+        node_list_.insert({ childName, child_node });
+    }
+
+    void death(Value name)
+    {
+        auto node = node_list_[name];
+        node->alive = false;
+    }
+
+    std::vector<Value> getInheritanceOrder()
+    {
+        std::vector<Value> res;
+        PreDfsTree(root_, res);
+        return res;
+    }
+
+private:
+    std::unordered_map<std::string, NodePtr> node_list_;
+    NodePtr root_;
+};
+
