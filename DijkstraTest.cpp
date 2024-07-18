@@ -1,8 +1,120 @@
 #include "stdafx.h"
 #include "DijkstraTest.h"
 #include "DesignBase.h"
-
+#include <queue>
 using namespace std;
+
+//https://leetcode.cn/problems/minimum-time-to-visit-disappearing-nodes/description/?envType=daily-question&envId=2024-07-18
+class Solution {
+public:
+
+#define INVALID_FLAG -1
+
+	using NodeList = std::vector<std::unordered_map<int, int>>;
+
+	void Dijstra(NodeList& node_list, std::vector<int>& dist, const std::vector<int>& disappear)
+	{
+		dist[0] = 0;
+		int n = dist.size();
+		std::vector<bool> flag(n, false);
+
+		int min_dis{ 0 };
+		while (min_dis != INVALID_FLAG)
+		{
+			auto next_node{ 0 };
+
+			min_dis = INVALID_FLAG;
+			std::map<int, int>next_node_list;
+			for (int i = 0; i < n; ++i)
+			{
+				if (!flag[i] && (dist[i] != INVALID_FLAG && (INVALID_FLAG == min_dis || min_dis > dist[i])))
+				{
+					next_node_list.insert({ dist[i] ,i });
+				}
+			}
+
+			if (!next_node_list.empty())
+			{
+				for (const auto& item : next_node_list)
+				{
+					if (item.first < disappear[item.second])
+					{
+						min_dis = item.first;
+						next_node = item.second;
+						break;
+					}
+
+					dist[item.second] = INVALID_FLAG;
+					flag[item.second] = true;
+					continue;
+				}
+			}
+
+
+			if (min_dis == INVALID_FLAG)break;
+			flag[next_node] = true;
+
+			auto& can_visit_nodes = node_list[next_node];
+			for (auto& node : can_visit_nodes)
+			{
+				if (!flag[node.first] && (dist[node.first] == INVALID_FLAG || dist[node.first] > min_dis + node.second))
+				{
+					dist[node.first] = min_dis + node.second;
+				}
+			}
+		}
+	}
+
+	//∂—”≈ªØdijstraÀ„∑®
+	void DijstraQueue(NodeList& node_list, std::vector<int>& dist, const std::vector<int>& disappear)
+	{
+		dist[0] = 0;
+		int n = dist.size();
+		std::vector<bool> flag(n, false);
+		using NodeInfo = std::pair<long, long>;
+		std::priority_queue<NodeInfo, std::deque<NodeInfo>, std::greater<NodeInfo>> nodes;
+		nodes.push({ 0,0 });
+
+		while (!nodes.empty())
+		{
+			auto top = nodes.top();
+			nodes.pop();
+			if (flag[top.second])continue;
+			flag[top.second] = true;
+
+			auto& can_visit_nodes = node_list[top.second];
+			for (auto& node : can_visit_nodes)
+			{
+				if (!flag[node.first] && (dist[node.first] == INVALID_FLAG || dist[node.first] > top.first + node.second) && (top.first + node.second < disappear[node.first]))
+				{
+					dist[node.first] = top.first + node.second;
+					nodes.push({ dist[node.first] , node.first });
+				}
+			}
+		}
+	}
+
+	std::vector<int> minimumTime(int n, std::vector<std::vector<int>>& edges, std::vector<int>& disappear)
+	{
+		NodeList node_list(n, NodeList::value_type{});
+		for (const auto& item : edges)
+		{
+			auto& dis = node_list[item[0]][item[1]];
+			if (dis == 0 || dis > item[2])
+			{
+				dis = item[2];
+				node_list[item[1]][item[0]] = item[2];
+			}
+		}
+		std::vector<int>distance(n, INVALID_FLAG);
+
+		DijstraQueue(node_list, distance, disappear);
+
+		return distance;
+	}
+};
+
+
 
 #define INVALID_FLAG INT_MAX
 
