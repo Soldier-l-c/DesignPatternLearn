@@ -65,7 +65,52 @@ public:
 		}
 	}
 
-	//堆优化dijstra算法
+	void DijstraQueue1(NodeList& node_list, std::vector<int>& dist, const std::vector<int>& disappear)
+	{
+		dist[0] = 0;
+		int n = dist.size();
+		std::vector<bool> flag(n, false);
+		using NodeInfo = std::pair<long, long>;
+		std::priority_queue<NodeInfo, std::deque<NodeInfo>, std::greater<NodeInfo>> nodes;
+		nodes.push({ 0,0 });
+
+		while (!nodes.empty())
+		{
+			while (!nodes.empty())
+			{
+				auto top = nodes.top();
+				if (flag[top.second] || (top.first >= disappear[top.second]))
+				{
+					if ((!flag[top.second]) && (top.first >= disappear[top.second]))
+					{
+						dist[top.second] = INVALID_FLAG;
+					}
+					flag[top.second] = true;
+
+					nodes.pop();
+					continue;
+				}
+				break;
+			}
+
+			if (nodes.empty())break;
+			auto top = nodes.top();
+			nodes.pop();
+			flag[top.second] = true;
+
+			auto& can_visit_nodes = node_list[top.second];
+			for (auto& node : can_visit_nodes)
+			{
+				if (!flag[node.first] && (dist[node.first] == INVALID_FLAG || dist[node.first] > top.first + node.second))
+				{
+					dist[node.first] = top.first + node.second;
+					nodes.push({ dist[node.first] , node.first });
+				}
+			}
+		}
+	}
+
+	//堆优化dijstra算法,相比上面的代码简洁一些，但时间复杂度没变
 	void DijstraQueue(NodeList& node_list, std::vector<int>& dist, const std::vector<int>& disappear)
 	{
 		dist[0] = 0;
