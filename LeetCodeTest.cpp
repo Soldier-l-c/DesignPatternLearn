@@ -2,6 +2,9 @@
 #include "LeetCodeTest.h"
 #include <set>
 #include <unordered_map>
+#include <queue>
+#include "TreeNode.h"
+#include <helper/util_time.h>
 
 template <typename KEY, typename VALUE>
 struct DuNode
@@ -394,6 +397,64 @@ C++Œﬁœ‡Õºdfs±È¿˙°£
         return original;
     }
 
+    struct TreeNode {
+        int val;
+        TreeNode* left;
+        TreeNode* right;
+    };
+
+    std::vector<std::vector<int>> zigzagLevelOrder(TreeNode* root) 
+    {
+        std::vector<std::vector<int>>res;
+        if (!root)return res;
+
+        std::stack<TreeNode*>nodes;
+        nodes.push(root);
+
+        bool rl{ false };
+        while (!nodes.empty())
+        {
+            std::vector<int>temp;
+
+            std::stack<TreeNode*>next_nodes;
+
+            while (!nodes.empty())
+            {
+                auto node = nodes.top();
+                nodes.pop();
+                temp.push_back(node->val);
+                if (rl)
+                {
+                    if(node->right)next_nodes.push(node->right);
+                    if(node->left)next_nodes.push(node->left);
+                }
+                else
+                {
+                    if (node->left)next_nodes.push(node->left);
+                    if (node->right)next_nodes.push(node->right);
+                }
+            }
+
+            nodes = std::move(next_nodes);
+
+            res.emplace_back(temp);
+            rl = !rl;
+        }
+        return res;
+    }
+
+    int findValueOfPartition(std::vector<int>& nums) 
+    {
+        std::sort(nums.begin(), nums.end());
+
+        auto res{ INT_MAX };
+        for (int i = 1; i < nums.size(); ++i)
+        {
+            res = min(nums[i] - nums[i - 1], res);
+        }
+        return res;
+    }
+
 private:
     std::vector<std::vector<int>>gcd_list_;
 };
@@ -738,12 +799,87 @@ void TestLFU()
     LOG(INFO) << "LFUCache get m:[" << lfu.get("m") << "]";
 }
 
+void GetNextArray(const std::string& s2, std::vector<int32_t>& next)
+{
+    auto m = s2.length();
+    next.resize(s2.length(),0);
+    if (m < 2)return;
+
+    next[0] = -1;
+    next[1] = 0;
+
+    size_t cn{ 0 }, i{ 2 };
+
+    while (i < m)
+    {
+        if (s2[i-1] == s2[cn])
+        {
+            next[i++] = ++cn;
+        }
+        else if (cn > 0)
+        {
+            cn = next[cn];
+        }
+        else
+        {
+            next[i++] = 0;
+        }
+    }
+}
+
+size_t KMP(const std::string& s1, const std::string& s2)
+{
+    std::vector<int32_t>next;
+    GetNextArray(s2, next);
+
+    size_t n{ s1.length() }, m{s2.length()}, i{ 0 }, j{ 0 };
+    while (i < n && j < m)
+    {
+        if (s1[i] == s2[j])
+        {
+            ++i; ++j;
+        }
+        else if (j == 0)
+        {
+            ++i;
+        }
+        else
+        {
+            j = next[j];
+        }
+    }
+
+    return j == m ? i - j : std::string::npos;
+}
+
 void LeetCodeTest::StartTest()
 {
     TestList();
     TestLRU();
     TestLFU();
     TestDuList();
+
+    std::string s1 = "asdadasdasda123sdqwerdfdcefg0dkfguidjkfghdkdfsdklfjslfsdklfjsl;dkfjsldkfjslkfjskl;fjsldkfjsl;dkfjsl;kdfjsldkfjsdlfkjsdl;fkjslf";
+    std::string s2 = "fkj";
+
+    helper::time::Timer t;
+    for (auto i  =0;i< 10000000;++i)
+    {
+        KMP(s1, s2);
+    }
+
+    LOG(INFO) << "KMP:[" << t.step() << "] "<< KMP(s1, s2);;
+
+    for (auto i = 0; i < 10000000; ++i)
+    {
+        std::string s1 = "asdadasdasda123sdqwerdfdcefg0dkfguidjkfghdkdfsdklfjslfsdklfjsl;dkfjsldkfjslkfjskl;fjsldkfjsl;dkfjsl;kdfjsldkfjsdlfkjsdl;fkjslf";
+        std::string s2 = "fkj";
+        s1.find(s2);
+        //LOG(INFO) << "find:[" << t.step() << "] " << s1.find(s2);;
+
+    }
+
+    LOG(INFO) << "find:[" << t.step() << "] " << s1.find(s2);;
 }
 
 class ThroneInheritance
