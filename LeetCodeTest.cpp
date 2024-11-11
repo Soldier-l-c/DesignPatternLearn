@@ -1027,7 +1027,7 @@ public:
     void push(const VALUE& value)
     {
         heap_.push_back(value);
-        down(size_++);
+        up(size_++);
     }
 
 private:
@@ -1050,7 +1050,7 @@ private:
         }
     }
 
-    void down(int index)
+    void up(int index)
     {
         while (index > 0)
         {
