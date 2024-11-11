@@ -1,10 +1,10 @@
 #pragma once
 namespace Sort
 {
-	//Ã°ÅÝ
+	//å†’æ³¡
 	/*
-	´Ó×óµ½ÓÒ²»¶Ï½»»»ÏàÁÚÄæÐòµÄÔªËØ£¬ÔÚÒ»ÂÖµÄÑ­»·Ö®ºó£¬¿ÉÒÔÈÃÎ´ÅÅÐòµÄ×î´óÔªËØÉÏ¸¡µ½ÓÒ²à¡£
-	ÔÚÒ»ÂÖÑ­»·ÖÐ£¬Èç¹ûÃ»ÓÐ·¢Éú½»»»£¬ÄÇÃ´ËµÃ÷Êý×éÒÑ¾­ÊÇÓÐÐòµÄ£¬´ËÊ±¿ÉÒÔÖ±½ÓÍË³ö¡£
+	ä»Žå·¦åˆ°å³ä¸æ–­äº¤æ¢ç›¸é‚»é€†åºçš„å…ƒç´ ï¼Œåœ¨ä¸€è½®çš„å¾ªçŽ¯ä¹‹åŽï¼Œå¯ä»¥è®©æœªæŽ’åºçš„æœ€å¤§å…ƒç´ ä¸Šæµ®åˆ°å³ä¾§ã€‚
+	åœ¨ä¸€è½®å¾ªçŽ¯ä¸­ï¼Œå¦‚æžœæ²¡æœ‰å‘ç”Ÿäº¤æ¢ï¼Œé‚£ä¹ˆè¯´æ˜Žæ•°ç»„å·²ç»æ˜¯æœ‰åºçš„ï¼Œæ­¤æ—¶å¯ä»¥ç›´æŽ¥é€€å‡ºã€‚
 	*/
 	template<class Value, class Cmp = std::less<Value>>
 	void Bubble(std::vector<Value>& value_list, Cmp cmp = Cmp())
@@ -26,12 +26,12 @@ namespace Sort
 		}
 	}
 
-	//Ñ¡Ôñ
+	//é€‰æ‹©
 	/*
-	´ÓÊý×éÖÐÑ¡Ôñ×îÐ¡ÔªËØ£¬½«ËüÓëÊý×éµÄµÚÒ»¸öÔªËØ½»»»Î»ÖÃ¡£ÔÙ´ÓÊý×éÊ£ÏÂµÄÔªËØÖÐÑ¡Ôñ³ö×îÐ¡µÄÔªËØ£¬
-	½«ËüÓëÊý×éµÄµÚ¶þ¸öÔªËØ½»»»Î»ÖÃ¡£²»¶Ï½øÐÐÕâÑùµÄ²Ù×÷£¬Ö±µ½½«Õû¸öÊý×éÅÅÐò¡£
-	Ñ¡ÔñÅÅÐòÐèÒª ~N2/2 ´Î±È½ÏºÍ ~N ´Î½»»»£¬ËüµÄÔËÐÐÊ±¼äÓëÊäÈëÎÞ¹Ø£¬
-	Õâ¸öÌØµãÊ¹µÃËü¶ÔÒ»¸öÒÑ¾­ÅÅÐòµÄÊý×éÒ²ÐèÒªÕâÃ´¶àµÄ±È½ÏºÍ½»»»²Ù×÷¡£
+	ä»Žæ•°ç»„ä¸­é€‰æ‹©æœ€å°å…ƒç´ ï¼Œå°†å®ƒä¸Žæ•°ç»„çš„ç¬¬ä¸€ä¸ªå…ƒç´ äº¤æ¢ä½ç½®ã€‚å†ä»Žæ•°ç»„å‰©ä¸‹çš„å…ƒç´ ä¸­é€‰æ‹©å‡ºæœ€å°çš„å…ƒç´ ï¼Œ
+	å°†å®ƒä¸Žæ•°ç»„çš„ç¬¬äºŒä¸ªå…ƒç´ äº¤æ¢ä½ç½®ã€‚ä¸æ–­è¿›è¡Œè¿™æ ·çš„æ“ä½œï¼Œç›´åˆ°å°†æ•´ä¸ªæ•°ç»„æŽ’åºã€‚
+	é€‰æ‹©æŽ’åºéœ€è¦ ~N2/2 æ¬¡æ¯”è¾ƒå’Œ ~N æ¬¡äº¤æ¢ï¼Œå®ƒçš„è¿è¡Œæ—¶é—´ä¸Žè¾“å…¥æ— å…³ï¼Œ
+	è¿™ä¸ªç‰¹ç‚¹ä½¿å¾—å®ƒå¯¹ä¸€ä¸ªå·²ç»æŽ’åºçš„æ•°ç»„ä¹Ÿéœ€è¦è¿™ä¹ˆå¤šçš„æ¯”è¾ƒå’Œäº¤æ¢æ“ä½œã€‚
 	*/
 	template<class Value, class Cmp = std::less<Value>>
 	void Selection(std::vector<Value>& value_list, Cmp cmp = Cmp())
@@ -52,24 +52,24 @@ namespace Sort
 		}
 	}
 
-	//²åÈëÅÅÐò
+	//æ’å…¥æŽ’åº
 	/*
-	Ã¿´Î¶¼½«µ±Ç°ÔªËØ²åÈëµ½×ó²àÒÑ¾­ÅÅÐòµÄÊý×éÖÐ£¬Ê¹µÃ²åÈëÖ®ºó×ó²àÊý×éÒÀÈ»ÓÐÐò¡£
-	¶ÔÓÚÊý×é {3, 5, 2, 4, 1}£¬Ëü¾ßÓÐÒÔÏÂÄæÐò£º(3, 2), (3, 1), (5, 2), (5, 4), (5, 1), (2, 1), (4, 1)£¬
-	²åÈëÅÅÐòÃ¿´ÎÖ»ÄÜ½»»»ÏàÁÚÔªËØ£¬ÁîÄæÐòÊýÁ¿¼õÉÙ 1£¬Òò´Ë²åÈëÅÅÐòÐèÒª½»»»µÄ´ÎÊýÎªÄæÐòÊýÁ¿¡£
-	²åÈëÅÅÐòµÄÊ±¼ä¸´ÔÓ¶ÈÈ¡¾öÓÚÊý×éµÄ³õÊ¼Ë³Ðò£¬Èç¹ûÊý×éÒÑ¾­²¿·ÖÓÐÐòÁË£¬ÄÇÃ´ÄæÐò½ÏÉÙ£¬ÐèÒªµÄ½»»»´ÎÊýÒ²¾Í½ÏÉÙ£¬Ê±¼ä¸´ÔÓ¶È½ÏµÍ¡£
-	Æ½¾ùÇé¿öÏÂ²åÈëÅÅÐòÐèÒª ~N2/4 ±È½ÏÒÔ¼° ~N2/4 ´Î½»»»£»
-	×î»µµÄÇé¿öÏÂÐèÒª ~N2/2 ±È½ÏÒÔ¼° ~N2/2 ´Î½»»»£¬×î»µµÄÇé¿öÊÇÊý×éÊÇµ¹ÐòµÄ£»
-	×îºÃµÄÇé¿öÏÂÐèÒª N-1 ´Î±È½ÏºÍ 0 ´Î½»»»£¬×îºÃµÄÇé¿ö¾ÍÊÇÊý×éÒÑ¾­ÓÐÐòÁË¡£
+	æ¯æ¬¡éƒ½å°†å½“å‰å…ƒç´ æ’å…¥åˆ°å·¦ä¾§å·²ç»æŽ’åºçš„æ•°ç»„ä¸­ï¼Œä½¿å¾—æ’å…¥ä¹‹åŽå·¦ä¾§æ•°ç»„ä¾ç„¶æœ‰åºã€‚
+	å¯¹äºŽæ•°ç»„ {3, 5, 2, 4, 1}ï¼Œå®ƒå…·æœ‰ä»¥ä¸‹é€†åºï¼š(3, 2), (3, 1), (5, 2), (5, 4), (5, 1), (2, 1), (4, 1)ï¼Œ
+	æ’å…¥æŽ’åºæ¯æ¬¡åªèƒ½äº¤æ¢ç›¸é‚»å…ƒç´ ï¼Œä»¤é€†åºæ•°é‡å‡å°‘ 1ï¼Œå› æ­¤æ’å…¥æŽ’åºéœ€è¦äº¤æ¢çš„æ¬¡æ•°ä¸ºé€†åºæ•°é‡ã€‚
+	æ’å…¥æŽ’åºçš„æ—¶é—´å¤æ‚åº¦å–å†³äºŽæ•°ç»„çš„åˆå§‹é¡ºåºï¼Œå¦‚æžœæ•°ç»„å·²ç»éƒ¨åˆ†æœ‰åºäº†ï¼Œé‚£ä¹ˆé€†åºè¾ƒå°‘ï¼Œéœ€è¦çš„äº¤æ¢æ¬¡æ•°ä¹Ÿå°±è¾ƒå°‘ï¼Œæ—¶é—´å¤æ‚åº¦è¾ƒä½Žã€‚
+	å¹³å‡æƒ…å†µä¸‹æ’å…¥æŽ’åºéœ€è¦ ~N2/4 æ¯”è¾ƒä»¥åŠ ~N2/4 æ¬¡äº¤æ¢ï¼›
+	æœ€åçš„æƒ…å†µä¸‹éœ€è¦ ~N2/2 æ¯”è¾ƒä»¥åŠ ~N2/2 æ¬¡äº¤æ¢ï¼Œæœ€åçš„æƒ…å†µæ˜¯æ•°ç»„æ˜¯å€’åºçš„ï¼›
+	æœ€å¥½çš„æƒ…å†µä¸‹éœ€è¦ N-1 æ¬¡æ¯”è¾ƒå’Œ 0 æ¬¡äº¤æ¢ï¼Œæœ€å¥½çš„æƒ…å†µå°±æ˜¯æ•°ç»„å·²ç»æœ‰åºäº†ã€‚
 	*/
 	template<class Value, class Cmp = std::less<Value>>
 	void Insertion(std::vector<Value>& value_list, Cmp cmp = Cmp())
 	{
 		if (value_list.empty())return;
 
-		//×î¿ªÊ¼ÈÏÎªvalue_lis[0]µ½value_lis[0]ÊÇÓÐÐòµÄ£¬
-		//½«value_list[1]²åÈëµ½ÓÐÐò¶ÓÁÐ£¬´ËÊ±ÓÐÐò¶ÓÁÐÎª0µ½1
-		//ÒÀ´Î½«1µ½n-1µÄÊý¾Ý²åÈëµ½ÓÐÐò¶ÓÁÐ£¬ÊµÏÖÅÅÐò
+		//æœ€å¼€å§‹è®¤ä¸ºvalue_lis[0]åˆ°value_lis[0]æ˜¯æœ‰åºçš„ï¼Œ
+		//å°†value_list[1]æ’å…¥åˆ°æœ‰åºé˜Ÿåˆ—ï¼Œæ­¤æ—¶æœ‰åºé˜Ÿåˆ—ä¸º0åˆ°1
+		//ä¾æ¬¡å°†1åˆ°n-1çš„æ•°æ®æ’å…¥åˆ°æœ‰åºé˜Ÿåˆ—ï¼Œå®žçŽ°æŽ’åº
 
 		for (auto i = 1; i < value_list.size(); ++i)
 		{
@@ -80,10 +80,10 @@ namespace Sort
 		}
 	}
 
-	//¿ìÅÅ
+	//å¿«æŽ’
 	/*
-	¹é²¢ÅÅÐò½«Êý×é·ÖÎªÁ½¸ö×ÓÊý×é·Ö±ðÅÅÐò£¬²¢½«ÓÐÐòµÄ×ÓÊý×é¹é²¢Ê¹µÃÕû¸öÊý×éÅÅÐò£»
-	¿ìËÙÅÅÐòÍ¨¹ýÒ»¸öÇÐ·ÖÔªËØ½«Êý×é·ÖÎªÁ½¸ö×ÓÊý×é£¬×ó×ÓÊý×éÐ¡ÓÚµÈÓÚÇÐ·ÖÔªËØ£¬ÓÒ×ÓÊý×é´óÓÚµÈÓÚÇÐ·ÖÔªËØ£¬½«ÕâÁ½¸ö×ÓÊý×éÅÅÐòÒ²¾Í½«Õû¸öÊý×éÅÅÐòÁË¡£
+	å½’å¹¶æŽ’åºå°†æ•°ç»„åˆ†ä¸ºä¸¤ä¸ªå­æ•°ç»„åˆ†åˆ«æŽ’åºï¼Œå¹¶å°†æœ‰åºçš„å­æ•°ç»„å½’å¹¶ä½¿å¾—æ•´ä¸ªæ•°ç»„æŽ’åºï¼›
+	å¿«é€ŸæŽ’åºé€šè¿‡ä¸€ä¸ªåˆ‡åˆ†å…ƒç´ å°†æ•°ç»„åˆ†ä¸ºä¸¤ä¸ªå­æ•°ç»„ï¼Œå·¦å­æ•°ç»„å°äºŽç­‰äºŽåˆ‡åˆ†å…ƒç´ ï¼Œå³å­æ•°ç»„å¤§äºŽç­‰äºŽåˆ‡åˆ†å…ƒç´ ï¼Œå°†è¿™ä¸¤ä¸ªå­æ•°ç»„æŽ’åºä¹Ÿå°±å°†æ•´ä¸ªæ•°ç»„æŽ’åºäº†ã€‚
 	*/
 	template<class Value, class Cmp = std::less<Value>>
 	void Quick(std::vector<Value>& value_list, int32_t begin, int32_t end, Cmp cmp = Cmp())
@@ -120,11 +120,11 @@ namespace Sort
 		Quick(value_list, 0, value_list.size() - 1, cmp);
 	}
 
-	//Ï£¶ûÅÅÐò
+	//å¸Œå°”æŽ’åº
 	/*
-	¶ÔÓÚ´ó¹æÄ£µÄÊý×é£¬²åÈëÅÅÐòºÜÂý£¬ÒòÎªËüÖ»ÄÜ½»»»ÏàÁÚµÄÔªËØ£¬Ã¿´ÎÖ»ÄÜ½«ÄæÐòÊýÁ¿¼õÉÙ 1¡£
-	Ï£¶ûÅÅÐòµÄ³öÏÖ¾ÍÊÇÎªÁË½â¾ö²åÈëÅÅÐòµÄÕâÖÖ¾ÖÏÞÐÔ£¬ËüÍ¨¹ý½»»»²»ÏàÁÚµÄÔªËØ£¬Ã¿´Î¿ÉÒÔ½«ÄæÐòÊýÁ¿¼õÉÙ´óÓÚ 1¡£
-	Ï£¶ûÅÅÐòÊ¹ÓÃ²åÈëÅÅÐò¶Ô¼ä¸ô h µÄÐòÁÐ½øÐÐÅÅÐò¡£Í¨¹ý²»¶Ï¼õÐ¡ h£¬×îºóÁî h=1£¬¾Í¿ÉÒÔÊ¹µÃÕû¸öÊý×éÊÇÓÐÐòµÄ¡£
+	å¯¹äºŽå¤§è§„æ¨¡çš„æ•°ç»„ï¼Œæ’å…¥æŽ’åºå¾ˆæ…¢ï¼Œå› ä¸ºå®ƒåªèƒ½äº¤æ¢ç›¸é‚»çš„å…ƒç´ ï¼Œæ¯æ¬¡åªèƒ½å°†é€†åºæ•°é‡å‡å°‘ 1ã€‚
+	å¸Œå°”æŽ’åºçš„å‡ºçŽ°å°±æ˜¯ä¸ºäº†è§£å†³æ’å…¥æŽ’åºçš„è¿™ç§å±€é™æ€§ï¼Œå®ƒé€šè¿‡äº¤æ¢ä¸ç›¸é‚»çš„å…ƒç´ ï¼Œæ¯æ¬¡å¯ä»¥å°†é€†åºæ•°é‡å‡å°‘å¤§äºŽ 1ã€‚
+	å¸Œå°”æŽ’åºä½¿ç”¨æ’å…¥æŽ’åºå¯¹é—´éš” h çš„åºåˆ—è¿›è¡ŒæŽ’åºã€‚é€šè¿‡ä¸æ–­å‡å° hï¼Œæœ€åŽä»¤ h=1ï¼Œå°±å¯ä»¥ä½¿å¾—æ•´ä¸ªæ•°ç»„æ˜¯æœ‰åºçš„ã€‚
 	*/
 	template<class Value, class Cmp = std::less<Value>>
 	void Shell(std::vector<Value>& value_list, Cmp cmp = Cmp())
@@ -150,8 +150,8 @@ namespace Sort
 		}
 	}
 
-	//¹é²¢
-	//¹é²¢ÅÅÐòµÄË¼ÏëÊÇ½«Êý×é·Ö³ÉÁ½²¿·Ö£¬·Ö±ð½øÐÐÅÅÐò£¬È»ºó¹é²¢ÆðÀ´¡£
+	//å½’å¹¶
+	//å½’å¹¶æŽ’åºçš„æ€æƒ³æ˜¯å°†æ•°ç»„åˆ†æˆä¸¤éƒ¨åˆ†ï¼Œåˆ†åˆ«è¿›è¡ŒæŽ’åºï¼Œç„¶åŽå½’å¹¶èµ·æ¥ã€‚
 	template<class Value, class Cmp = std::less<Value>>
 	void Merge(std::vector<Value>& value_list, int32_t begin, int32_t end, int32_t mid, Cmp cmp = Cmp())
 	{
@@ -174,7 +174,7 @@ namespace Sort
 			{
 				value_list[begin++] = temp_list[temp_begin++];
 			}
-			//±£Ö¤ÎÈ¶¨ÐÔ,Ö»ÓÐÇ°ÃæµÄÊý´óÓÚºóÃæµÄ²ÅÓÃºóÃæµÄ£¬Ç°ÃæµÄÐ¡ÓÚµÈÓÚºóÃæµÄ¾ÍÓÃÇ°ÃæµÄ
+			//ä¿è¯ç¨³å®šæ€§,åªæœ‰å‰é¢çš„æ•°å¤§äºŽåŽé¢çš„æ‰ç”¨åŽé¢çš„ï¼Œå‰é¢çš„å°äºŽç­‰äºŽåŽé¢çš„å°±ç”¨å‰é¢çš„
 			else if (cmp(temp_list[temp_mid], temp_list[temp_begin]))
 			{
 				value_list[begin++] = temp_list[temp_mid++];
@@ -211,9 +211,9 @@ namespace Sort
 		MergeSort(value_list, 0, size - 1, cmp);
 	}
 
-	//¶ÑÅÅÐò
+	//å †æŽ’åº
 
-	//ÉÏ¸¡
+	//ä¸Šæµ®
 	template<class Value, class Cmp = std::less<Value>>
 	void Upward(std::vector<Value>& value_list, int32_t index, Cmp cmp = Cmp())
 	{
@@ -233,7 +233,7 @@ namespace Sort
 		}
 	}
 
-	//ÏÂ³Á
+	//ä¸‹æ²‰
 	template<class Value, class Cmp = std::less<Value>>
 	void Sink(std::vector<Value>& value_list, int32_t index, int32_t size, Cmp cmp = Cmp())
 	{
@@ -260,7 +260,7 @@ namespace Sort
 	void HeapSink(std::vector<Value>& value_list, Cmp cmp = Cmp())
 	{
 		int32_t size = value_list.size();
-		for (auto index = size - 1; index >= 0; --index)
+		for (auto index = size/2 - 1; index >= 0; --index)
 		{
 			Sink(value_list, index, size, cmp);
 		}

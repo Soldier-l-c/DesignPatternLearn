@@ -459,6 +459,56 @@ private:
     std::vector<std::vector<int>>gcd_list_;
 };
 
+using ListNodeInt = std::shared_ptr<ListNode<int>>;
+
+ListNodeInt ReverseList(ListNodeInt head)
+{
+    decltype(head)pre = nullptr;
+
+    while (head)
+    {
+        auto next = head->next;
+        head->next = pre;
+        pre = head;
+        head = next;
+    }
+    return pre;
+}
+
+ListNodeInt reverseKGroup(ListNodeInt head, int k)
+{
+    auto length = 1;
+    decltype(head) res_head = nullptr, last_head = head, last_tial = nullptr;
+
+    while (head)
+    {
+        auto next = head->next;
+        if ((length % k == 0))
+        {
+            head->next = nullptr;
+            if (!res_head)
+            {
+                res_head = head;
+            }
+            if (!last_tial)
+            {
+                last_tial->next = head;
+            }
+
+            ReverseList(last_head);
+            last_tial = last_head;
+            last_tial->next = next;
+            last_head = next;
+        }
+
+        head = next;
+        ++length;
+    }
+
+    return res_head;
+}
+
+
 //Ë«ÏòÁ´±í
 template <class KEY, class VALUE>
 class DuLinkList
@@ -949,3 +999,74 @@ private:
     NodePtr root_;
 };
 
+template<typename VALUE,
+    typename container = std::vector<VALUE>,
+    typename CMP = std::less<VALUE>>
+    class PriorityQueue
+{
+public:
+    PriorityQueue(CMP cmp) :cmp_(cmp) {};
+
+    void pop()
+    {
+        std::swap(heap_[0], heap_[size_-- - 1]);
+        heap_.pop_back();
+        sink(0);
+    }
+
+    VALUE top()
+    {
+        return heap_[0];
+    }
+
+    bool empty()
+    {
+        return heap_.empty();
+    }
+
+    void push(const VALUE& value)
+    {
+        heap_.push_back(value);
+        down(size_++);
+    }
+
+private:
+
+    void sink(int index)
+    {
+        while (index < size_ / 2)
+        {
+            auto left = index * 2 + 1;
+            auto right = index * 2 + 2;
+
+            auto cur = (right < size_&& cmp_(heap_[right], heap_[left])) ? right : left;
+            if (cmp_(heap_[cur], heap_[index]))
+            {
+                std::swap(heap_[cur], heap_[index]);
+                index = cur;
+                continue;
+            }
+            break;
+        }
+    }
+
+    void down(int index)
+    {
+        while (index > 0)
+        {
+            auto parent = (index + 1) / 2 - 1;
+            if (cmp_(heap_[index], heap_[parent]))
+            {
+                std::swap(heap_[index], heap_[parent]);
+                index = parent;
+                continue;
+            }
+            break;
+        }
+    }
+
+private:
+    container heap_;
+    size_t size_{ 0 };
+    CMP cmp_;
+};
